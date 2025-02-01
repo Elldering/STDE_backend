@@ -18,6 +18,9 @@ func main() {
 	}
 
 	router := gin.Default()
+
+	router.Use(configs.CorsConfig())
+
 	routes.Routes(router)
 
 	router.Run(":8080")

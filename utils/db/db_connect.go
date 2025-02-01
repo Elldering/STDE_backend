@@ -11,6 +11,7 @@ import (
 
 var DB *sql.DB
 
+// Connect подключается к базе данных и инициализирует глобальную переменную DB
 func Connect() error {
 	var err error
 
