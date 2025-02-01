@@ -2,6 +2,9 @@ package configs
 
 import (
 	"fmt"
+	"github.com/joho/godotenv"
+	"log"
+	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -48,9 +51,37 @@ type CORSConfig struct {
 
 var AppConfig *Config
 
-// LoadConfig загружает конфигурационные данные и инициализирует AppConfig
-func LoadConfig(path string) error {
-	viper.SetConfigFile(path)
+// LoadConfig загружает конфигурационные данные и инициализирует AppConfig.
+// Принимает параметр envFilePath, который указывает тип файла .env:
+// "env" для production конфигурации и "env.test" для тестовой конфигурации.
+// Возвращает ошибку, если произошли проблемы с загрузкой файла .env или файла конфигурации.
+func LoadConfig(envFilePath string) error {
+
+	var envPathLoad string
+
+	// Обработка выбора между test и prod .env
+	switch envFilePath {
+	case "env":
+		envPathLoad = ".env"
+	case "env.test":
+		envPathLoad = "../../.env.test"
+	default:
+		log.Println("Вы ввели неправильный тип файла (env) или он отсутствует в системе")
+	}
+
+	// Загрузка переменных окружения из указанного файла .env
+	err := godotenv.Load(envPathLoad)
+	if err != nil {
+		return fmt.Errorf("ошибка при загрузке файла .env, %w", err)
+	}
+
+	// Получаем путь к конфигурационному файлу из переменной окружения
+	configPath := os.Getenv("CONFIG_PATH")
+	if configPath == "" {
+		return fmt.Errorf("переменная окружения CONFIG_PATH не установлена")
+	}
+
+	viper.SetConfigFile(configPath)
 	viper.SetConfigType("yaml")
 
 	// Читаем файл конфигурации
@@ -69,7 +100,12 @@ func LoadConfig(path string) error {
 	return nil
 }
 
-// CorsConfig возвращает конфигурацию CORS
+// CorsConfig возвращает middleware для настройки CORS (Cross-Origin Resource Sharing) в Gin.
+// Функция использует настройки CORS из глобальной переменной AppConfig.
+// Если список AllowOrigins пуст, функция вызывает panic.
+//
+// Возвращаемое значение:
+//   - gin.HandlerFunc: middleware для настройки CORS.
 func CorsConfig() gin.HandlerFunc {
 	config := cors.Config{
 		AllowOrigins:     AppConfig.CORS.AllowOrigins,

@@ -1,4 +1,4 @@
-package tests
+package test_api
 
 import (
 	"encoding/json"
@@ -25,7 +25,7 @@ func SetupTestRouter() *gin.Engine {
 	println("Текущая рабочая директория:", dir)
 
 	// Загружаем конфигурацию
-	if err := configs.LoadConfig("../../../configs/config.yaml"); err != nil {
+	if err := configs.LoadConfig("env.test"); err != nil {
 		panic("Не удалось загрузить конфигурацию: " + err.Error())
 	}
 

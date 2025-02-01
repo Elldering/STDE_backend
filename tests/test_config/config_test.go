@@ -12,7 +12,7 @@ import (
 
 // TestLoadConfig тестирование выгрузки данных с конфига используя функции LoadConfig и структуры Config
 func TestLoadConfig(t *testing.T) {
-	err := configs.LoadConfig("../../configs/config.yaml") // Указываем путь к файлу конфигурации
+	err := configs.LoadConfig("env.test") // Указываем путь к файлу конфигурации
 	if err != nil {
 		t.Fatalf("Ошибка загрузки конфигурации: %v", err)
 	}
@@ -41,7 +41,7 @@ func TestLoadConfig(t *testing.T) {
 // TestLoadCorsConfig тестирует загрузку конфигурации CORS
 func TestLoadCorsConfig(t *testing.T) {
 	// Загрузить конфигурацию
-	err := configs.LoadConfig("../../configs/config.yaml")
+	err := configs.LoadConfig("env.test")
 	require.NoError(t, err, "Ошибка загрузки конфигурации")
 
 	// Проверка значений полей конфигурации CORS

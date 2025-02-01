@@ -11,7 +11,7 @@ import (
 // TestConnectDB тестирует подключение к базе данных
 func TestConnectDB(t *testing.T) {
 	// Загружаем конфигурацию
-	err := configs.LoadConfig("../../configs/config.yaml")
+	err := configs.LoadConfig("env.test")
 	assert.NoError(t, err, "Ошибка загрузки конфигурации")
 
 	// Подключаемся к базе данных
