@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"STDE_proj/internal/repositories"
+	"STDE_proj/internal/services"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 // В случае успеха возвращает HTTP статус 200 и JSON с данными групп пользователей.
 func GetUserGroupsHandler(c *gin.Context) {
 	// Получаем все группы пользователей из репозитория
-	userGroups, err := repositories.GetAllUserGroups()
+	userGroups, err := services.GetAllUserGroups()
 	if err != nil {
 		// Логируем ошибку и возвращаем HTTP статус 500 и сообщение об ошибке
 		log.Printf("Ошибка при получении групп пользователей: %v", err)
