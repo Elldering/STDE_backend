@@ -6,5 +6,6 @@ import (
 )
 
 func Routes(router *gin.Engine) {
-	router.GET("/usergroups", controllers.GetUserGroupsHandler)
+	router.GET("/user_groups", controllers.GetUserGroupsHandler)
+	router.POST("/auth_group_permissions", controllers.PostAuthGroupPermissionsHandler)
 }
