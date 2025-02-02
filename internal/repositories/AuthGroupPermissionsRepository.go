@@ -18,3 +18,19 @@ func CreateAuthGroupPermission(agp models.AuthGroupPermissions) error {
 	_, err := db.DB.Exec(query, agp.GroupID, agp.PermissionID)
 	return err
 }
+
+//
+//func DeleteAuthGroupPermission(agp models.AuthGroupPermissions) error {
+//	if db.DB == nil {
+//
+//	}
+//}
+//
+//func UpdateAuthGroupPermission(agp models.AuthGroupPermissions) error {
+//	if db.DB == nil {
+//	}
+//}
+//
+//func GetAuthGroupPermission(agp models.AuthGroupPermissions) (models.AuthGroupPermissions, error) {
+//
+//}

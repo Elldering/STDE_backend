@@ -5,6 +5,6 @@ import (
 	"STDE_proj/internal/repositories"
 )
 
-func CreateAuthGroupPermission(agp models.AuthGroupPermissions) error {
+func PostAuthGroupPermission(agp models.AuthGroupPermissions) error {
 	return repositories.CreateAuthGroupPermission(agp)
 }

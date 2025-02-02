@@ -19,7 +19,7 @@ func PostAuthGroupPermissionsHandler(c *gin.Context) {
 		return
 	}
 
-	err := services.CreateAuthGroupPermission(agp)
+	err := services.PostAuthGroupPermission(agp)
 	if err != nil {
 		log.Printf("Ошибка при создании связи группы и прав доступа: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при создании связи"})
