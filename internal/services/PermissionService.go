@@ -5,19 +5,19 @@ import (
 	"STDE_proj/internal/repositories"
 )
 
-func GetPermissions() ([]models.Permisson, error) {
+func GetPermissions() ([]models.Permission, error) {
 	return repositories.GetAllPermissions()
 }
 
-func GetPermissionById(id int) (models.Permisson, error) {
+func GetPermissionById(id int) (models.Permission, error) {
 	return repositories.GetPermissionById(id)
 }
 
-func PostPermission(agp models.Permisson) error {
+func PostPermission(agp models.Permission) error {
 	return repositories.PostPermission(agp)
 }
 
-func PutPermission(id int, agp models.Permisson) error {
+func PutPermission(id int, agp models.Permission) error {
 	return repositories.PutPermission(id, agp)
 }
 
