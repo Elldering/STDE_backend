@@ -6,5 +6,5 @@ import (
 )
 
 func PostAuthGroupPermission(agp models.AuthGroupPermissions) error {
-	return repositories.CreateAuthGroupPermission(agp)
+	return repositories.PostAuthGroupPermission(agp)
 }

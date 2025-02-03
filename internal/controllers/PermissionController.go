@@ -23,7 +23,6 @@ func GetPermissionHandler(c *gin.Context) {
 func GetPermissionByIdHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
-	log.Printf("Ошибка при преобразовании id: %d", id)
 	if err != nil {
 		log.Printf("Ошибка при преобразовании id: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверный формат ID"})

@@ -13,13 +13,9 @@ func GetPermissionById(id int) (models.Permisson, error) {
 	return repositories.GetPermissionById(id)
 }
 
-func PostPermission(agp models.Permisson) error {
-	return repositories.PostPermission(agp)
-}
+func PostPermission(agp models.Permisson) error { return repositories.PostPermission(agp) }
 
-func PutPermission(id int, agp models.Permisson) error {
-	return repositories.PutPermission(id, agp)
-}
+func PutPermission(id int, agp models.Permisson) error { return repositories.PutPermission(id, agp) }
 
 func DeletePermission(id int) error {
 	return repositories.DeletePermission(id)
