@@ -1,6 +1,6 @@
 package models
 
-type Permisson struct {
+type Permission struct {
 	ID          int    `json:"id"`
 	Codename    string `json:"codename"`
 	Description string `json:"description"`
