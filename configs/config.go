@@ -18,6 +18,7 @@ type Config struct {
 	Database DatabaseConfig `mapstructure:"database"`
 	Logging  LoggingConfig  `mapstructure:"logging"`
 	CORS     CORSConfig     `mapstructure:"cors"`
+	S3       S3Config       `mapstructure:"s3"`
 }
 
 // ServerConfig структура для конфигурации сервера
@@ -47,6 +48,15 @@ type CORSConfig struct {
 	AllowHeaders     []string `mapstructure:"allow_headers"`
 	AllowCredentials bool     `mapstructure:"allow_credentials"`
 	MaxAge           int      `mapstructure:"max_age"`
+}
+
+// S3Config структура для конфигурации S3
+type S3Config struct {
+	Bucket    string `mapstructure:"bucket"`
+	Region    string `mapstructure:"region"`
+	AccessKey string `mapstructure:"access_key"`
+	SecretKey string `mapstructure:"secret_key"`
+	Endpoint  string `mapstructure:"endpoint"`
 }
 
 var AppConfig *Config

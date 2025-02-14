@@ -3,7 +3,9 @@ package main
 import (
 	"STDE_proj/configs"
 	"STDE_proj/internal/routes"
+
 	"STDE_proj/utils/db"
+	"STDE_proj/utils/time_web_s3"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -17,7 +19,10 @@ func main() {
 
 	// Подключение к базе данных
 	if err := db.Connect(); err != nil {
-		log.Fatalf("Не удалось подключиться у базе данных: %v", err)
+		log.Fatalf("Не удалось подключиться к базе данных: %v", err)
+	}
+	if err := time_web_s3.InitS3(); err != nil {
+		log.Fatalf("Не удалось подключиться к S3: %v", err)
 	}
 
 	// Инициализация экземпляра маршрутизатора
@@ -33,4 +38,5 @@ func main() {
 	if err := router.Run(":8080"); err != nil {
 		log.Fatalf("Ошибка запуска сервера: %v", err)
 	}
+
 }

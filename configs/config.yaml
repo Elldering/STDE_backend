@@ -23,8 +23,17 @@ cors:
   allow_credentials: true
   max_age: 43200 # 12 часов в секундах
 
+s3:
+  bucket: 50d7c1c5-c7d4dfff-e316-40a1-8fde-a56e3a6362a8
+  region: ru-1
+  access_key: WQ23X0DWIE4YZI9AZ902
+  secret_key: 2WBucNg4AhA8UNbkmA9qLB69hKEsjwoQ59X3qp1r
+  endpoint: https://s3.timeweb.cloud
+
 logging:
   level: info
   format: json
+
+
 
 
