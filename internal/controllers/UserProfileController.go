@@ -13,19 +13,20 @@ import (
 // Использует метод GetAllUserGroups из пакета repositories для получения данных.
 // В случае ошибки возвращает HTTP статус 500 и сообщение об ошибке.
 // В случае успеха возвращает HTTP статус 200 и JSON с данными групп пользователей.
-func GetUserGroupsHandler(c *gin.Context) {
+func GetUserProfileHandler(c *gin.Context) {
 	// Получаем все группы пользователей из репозитория
-	userGroups, err := services.GetAllUserGroups()
+	userProfile, err := services.GetAllUserProfile()
 	if err != nil {
 		// Логируем ошибку и возвращаем HTTP статус 500 и сообщение об ошибке
-		log.Printf("Ошибка при получении групп пользователей: %v", err)
+		log.Printf("Ошибка при получении профелей пользователей: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
 		return
 	}
 	// Возвращаем HTTP статус 200 и JSON с данными групп пользователей
-	c.JSON(http.StatusOK, userGroups)
+	c.JSON(http.StatusOK, userProfile)
 }
-func GetUserGroupByIdHandler(c *gin.Context) {
+
+func GetUserProfileByIdHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
@@ -33,34 +34,33 @@ func GetUserGroupByIdHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверный формат ID"})
 		return
 	}
-
-	userGroup, err := services.GetUserGroupById(id)
+	userProfile, err := services.GetUserProfileById(id)
 	if err != nil {
-		log.Printf("Ошибка при получении групы пользователей: %v", err)
+		log.Printf("Ошибка при получении: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
 		return
 	}
-	c.JSON(http.StatusOK, userGroup)
-
+	c.JSON(http.StatusOK, userProfile)
 }
-func PostUserGroupHandler(c *gin.Context) {
-	var agp models.UserGroup
+
+func PostUserProfileHandler(c *gin.Context) {
+	var agp models.UserProfile
 	if err := c.ShouldBindJSON(&agp); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err := services.PostUserGroup(agp)
+	err := services.PostUserProfile(agp)
 	if err != nil {
-		log.Printf("Ошибка при создании связи группы и прав доступа: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при создании связи"})
+		log.Printf("Ошибка при добавлении нового профиля: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при создании профиля"})
 		return
 	}
 
 	c.JSON(http.StatusOK, agp)
 }
 
-func PutUserGroupHandler(c *gin.Context) {
+func PutUserProfileHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
@@ -68,22 +68,22 @@ func PutUserGroupHandler(c *gin.Context) {
 		return
 	}
 
-	var agp models.UserGroup
+	var agp models.UserProfile
 	if err := c.ShouldBindJSON(&agp); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = services.PutUserGroup(id, agp)
+	err = services.PutUserProfile(id, agp)
 	if err != nil {
-		log.Printf("Ошибка при обновлении группы пользователей: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при обновлении группы пользователей"})
+		log.Printf("Ошибка при обновлении профилей пользователей: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при обновлении профилей пользователей"})
 		return
 	}
-
 	c.JSON(http.StatusOK, agp)
 }
-func DeleteUserGroupHandler(c *gin.Context) {
+
+func DeleteUserProfileHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
@@ -92,12 +92,12 @@ func DeleteUserGroupHandler(c *gin.Context) {
 		return
 	}
 
-	err = services.DeleteUserGroup(id)
+	err = services.DeleteUserProfile(id)
 	if err != nil {
-		log.Printf("Ошибка при удалении группы пользователей: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при удалении группы пользователей"})
+		log.Printf("Ошибка при удалении профиля пользователя: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при удалении профиля пользователя"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Группа пользователей успешно удалена"})
+	c.JSON(http.StatusOK, gin.H{"message": "Профиль пользователя успешно удален"})
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"STDE_proj/configs"
 	"STDE_proj/internal/routes"
-
 	"STDE_proj/utils/db"
 	"STDE_proj/utils/time_web_s3"
 	"github.com/gin-gonic/gin"
@@ -38,5 +37,4 @@ func main() {
 	if err := router.Run(":8080"); err != nil {
 		log.Fatalf("Ошибка запуска сервера: %v", err)
 	}
-
 }

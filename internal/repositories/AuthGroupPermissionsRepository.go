@@ -8,7 +8,7 @@ import (
 )
 
 // Функция для создания связи группы и прав доступа
-func CreateAuthGroupPermission(agp models.AuthGroupPermissions) error {
+func PostAuthGroupPermission(agp models.AuthGroupPermissions) error {
 	if db.DB == nil {
 		log.Println("Ошибка: подключение к базе данных не инициализировано")
 		return fmt.Errorf("подключение к базе данных не инициализировано")
