@@ -27,8 +27,6 @@ func main() {
 	// Инициализация экземпляра маршрутизатора
 	router := gin.Default()
 
-<<<<<<< HEAD
-	log.Println(configs.AppConfig.YandexDisk.Token)
 
 =======
 >>>>>>> Nikita
