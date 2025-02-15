@@ -9,6 +9,8 @@ import (
 	"log"
 )
 
+//func GetAllAuthUser() ([]models.AuthUser, error) {return repositories.GetAllAuthUser()}
+
 func PostAuthUser(data models.AuthUser) error {
 	if !validation.ValidateEmail(data.Email) {
 		log.Println("Ошибка: некорректный формат электронной почты")
@@ -27,3 +29,5 @@ func PostAuthUser(data models.AuthUser) error {
 	data.Password = hashedPassword
 	return repositories.PostAuthUser(data)
 }
+
+func DeleteAuthUser(id int) error { return repositories.DeleteAuthUser(id) }

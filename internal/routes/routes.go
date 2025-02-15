@@ -63,4 +63,6 @@ func Routes(router *gin.Engine) {
 	router.DELETE("/user_profile/:id", controllers.DeleteUserProfileHandler)
 	// Auth User
 	router.POST("/auth_user", controllers.PostAuthUserHandler)
+	router.DELETE("/auth_user/:id", controllers.DeleteAuthUserHandler)
+	//router.GET("/auth_user", controllers.GetAllAuthUserHandler)
 }

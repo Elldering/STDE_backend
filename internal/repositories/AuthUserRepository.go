@@ -8,6 +8,29 @@ import (
 	"log"
 )
 
+//func GetAllAuthUser()([]models.AuthUser, error){
+//	if db.DB == nil {
+//		log.Println("Ошибка: подключение к базе данных не инициализировано")
+//		return nil, fmt.Errorf("подключение к базе данных не инициализировано")
+//	}
+//	rows, err := db.DB.Query("SELECT id, password, last_login, email, phone_number, is_super_user, is_email, is_number_verify, is_blocked, FROM permission")
+//	if err != nil {
+//		return nil, err
+//	}
+//	defer rows.Close()
+//
+//	var permissions []models.Permission
+//	for rows.Next() {
+//		var permission models.Permission
+//		if err := rows.Scan(&permission.ID, &permission.Codename, &permission.Description); err != nil {
+//			return nil, err
+//		}
+//		permissions = append(permissions, permission)
+//	}
+//
+//	return permissions, nil
+//}
+
 func PostAuthUser(data models.AuthUser) error {
 	if db.DB == nil {
 		log.Println("Ошибка: подключение к базе данных не инициализировано")
@@ -29,6 +52,31 @@ func PostAuthUser(data models.AuthUser) error {
 	if rowsAffected == 0 {
 		log.Println("Ошибка: пользователь не был добавлен")
 		return errors.New("пользователь не был добавлен")
+	}
+
+	return nil
+}
+
+func DeleteAuthUser(id int) error {
+	if db.DB == nil {
+		log.Println("Ошибка: подключение к базе данных не инициализировано")
+		return errors.New("подключение к базе данных не инициализировано")
+	}
+
+	result, err := db.DB.Exec("DELETE FROM auth_user WHERE id=$1", id)
+	if err != nil {
+		log.Printf("Ошибка при удалении Пользователя с id %d: %v", id, err)
+		return fmt.Errorf("ошибка при удалении Пользователя: %v", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Ошибка при проверке количества удаленных строк для id %d: %v", id, err)
+		return fmt.Errorf("ошибка при проверке количества удаленных строк: %v", err)
+	}
+	if rowsAffected == 0 {
+		log.Printf("Ошибка: Пользователь с id %d не найдена", id)
+		return fmt.Errorf("пользователь с id %d не найдена", id)
 	}
 
 	return nil
