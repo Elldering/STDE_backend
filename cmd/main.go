@@ -27,9 +27,6 @@ func main() {
 	// Инициализация экземпляра маршрутизатора
 	router := gin.Default()
 
-
-=======
->>>>>>> Nikita
 	// Использование конфигурации CORS в нашем маршрутизаторе
 	router.Use(configs.CorsConfig())
 
