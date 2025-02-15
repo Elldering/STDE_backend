@@ -4,6 +4,7 @@ import (
 	"STDE_proj/internal/models"
 	"STDE_proj/utils/db"
 	"database/sql"
+	"errors"
 	"fmt"
 	_ "github.com/gin-gonic/gin"
 	"log"
@@ -43,7 +44,7 @@ func GetUserGroupById(id int) (models.UserGroup, error) {
 
 	var userGroup models.UserGroup
 	if err := row.Scan(&userGroup.ID, &userGroup.Name); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return models.UserGroup{}, fmt.Errorf("группа пользователей с id %d не найдена", id)
 		}
 		return models.UserGroup{}, err
