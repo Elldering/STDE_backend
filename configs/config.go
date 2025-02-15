@@ -14,10 +14,11 @@ import (
 
 // Config структура для хранения всех конфигурационных данных
 type Config struct {
-	Server   ServerConfig   `mapstructure:"server"`
-	Database DatabaseConfig `mapstructure:"database"`
-	Logging  LoggingConfig  `mapstructure:"logging"`
-	CORS     CORSConfig     `mapstructure:"cors"`
+	Server     ServerConfig     `mapstructure:"server"`
+	Database   DatabaseConfig   `mapstructure:"database"`
+	Logging    LoggingConfig    `mapstructure:"logging"`
+	CORS       CORSConfig       `mapstructure:"cors"`
+	YandexDisk YandexDiskConfig `mapstructure:"yandex_disk"`
 }
 
 // ServerConfig структура для конфигурации сервера
@@ -47,6 +48,10 @@ type CORSConfig struct {
 	AllowHeaders     []string `mapstructure:"allow_headers"`
 	AllowCredentials bool     `mapstructure:"allow_credentials"`
 	MaxAge           int      `mapstructure:"max_age"`
+}
+
+type YandexDiskConfig struct {
+	Token string `mapstructure:"token"`
 }
 
 var AppConfig *Config

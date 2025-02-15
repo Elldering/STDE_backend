@@ -36,6 +36,11 @@ func TestLoadConfig(t *testing.T) {
 	if configs.AppConfig.Database.Name == "" {
 		t.Errorf("DBName ничего в себе не содержит или отсутствует")
 	}
+
+	if configs.AppConfig.YandexDisk.Token == "" {
+		t.Errorf("YandexDisk ничего в себе не содержит или отсутствует")
+	}
+
 }
 
 // TestLoadCorsConfig тестирует загрузку конфигурации CORS
