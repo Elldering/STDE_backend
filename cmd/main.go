@@ -27,11 +27,6 @@ func main() {
 	// Инициализация экземпляра маршрутизатора
 	router := gin.Default()
 
-<<<<<<< HEAD
-	log.Println(configs.AppConfig.YandexDisk.Token)
-
-=======
->>>>>>> Nikita
 	// Использование конфигурации CORS в нашем маршрутизаторе
 	router.Use(configs.CorsConfig())
 
