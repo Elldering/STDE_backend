@@ -30,6 +30,20 @@ func Routes(router *gin.Engine) {
 		// Пока не сделал
 		//s3Group.PUT("/files/:filename", s3Controller.PutFileHandler)
 	}
+
+	user := router.Group("/user")
+	{
+		user.POST("/add", controllers.PostAuthUserHandler)
+		user.POST("/delete/:id", controllers.DeleteAuthUserHandler)
+	}
+
+	// Auth user groups
+	router.GET("/auth_user_groups", controllers.GetAuthUserGroupsAllHandler)
+	router.GET("/auth_user_groups/:id", controllers.GetAuthUserGroupsByIdHandler)
+	router.POST("/auth_user_groups/", controllers.PostAuthUserGroupsHandler)
+	router.PUT("/auth_user_groups/:id", controllers.PutAuthUserGroupsHandler)
+	router.DELETE("/auth_user_groups/:id", controllers.DeleteAuthUserGroupsHandler)
+
 	//User groups
 	router.GET("/user_groups", controllers.GetUserGroupsHandler)
 	router.POST("/user_groups", controllers.PostUserGroupHandler)
@@ -61,8 +75,4 @@ func Routes(router *gin.Engine) {
 	router.POST("/user_profile", controllers.PostUserProfileHandler)
 	router.PUT("/user_profile/:id", controllers.PutUserProfileHandler)
 	router.DELETE("/user_profile/:id", controllers.DeleteUserProfileHandler)
-	// Auth User
-	router.POST("/auth_user", controllers.PostAuthUserHandler)
-	router.DELETE("/auth_user/:id", controllers.DeleteAuthUserHandler)
-	//router.GET("/auth_user", controllers.GetAllAuthUserHandler)
 }
