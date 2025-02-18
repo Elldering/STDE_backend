@@ -37,6 +37,12 @@ func Routes(router *gin.Engine) {
 		user.POST("/delete/:id", controllers.DeleteAuthUserHandler)
 	}
 
+	// Reviews
+
+	router.GET("/reviews", controllers.GetReviewsAllHandler)
+	router.GET("/reviews/:id", controllers.GetReviewsByIdHandler)
+	router.POST("/reviews", controllers.PostReviewsHandler)
+
 	// Auth user groups
 	router.GET("/auth_user_groups", controllers.GetAuthUserGroupsAllHandler)
 	router.GET("/auth_user_groups/:id", controllers.GetAuthUserGroupsByIdHandler)

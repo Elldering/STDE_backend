@@ -30,7 +30,7 @@ func PostFileHandler(c *gin.Context) {
 
 	url, err := services.PostFile(context.TODO(), file, fileName)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error ": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"url": url})
