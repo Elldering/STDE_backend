@@ -2,7 +2,6 @@ package routes
 
 import (
 	"STDE_proj/internal/controllers"
-	"STDE_proj/internal/controllers/Auth"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,11 +17,6 @@ func TestRoutes(router *gin.Engine) {
 		metrics := router.Group("/metrics")
 		{
 			metrics.GET("/user-count", controllers.MetricsHandler())
-		}
-		auth := router.Group("/auth")
-		{
-			auth.POST("/login", Auth.LoginHandler)
-			auth.POST("/refresh", Auth.RefreshToken)
 		}
 
 		s3Group := router.Group("/s3")
