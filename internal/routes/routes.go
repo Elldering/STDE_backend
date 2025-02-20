@@ -16,6 +16,7 @@ func Routes(router *gin.Engine) {
 	{
 		user := public.Group("/user")
 		{
+			user.GET("/logout", Auth.LogoutHandler)
 			// Маршрут не реализован как регистрация. Реализован как обычный Create
 			//user.POST("/add", controllers.PostAuthUserHandler)
 			register := user.Group("/register")

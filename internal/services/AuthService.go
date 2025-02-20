@@ -11,6 +11,12 @@ import (
 
 // GenerateTokens создает access и refresh токены для пользователя
 func GenerateTokens(user *models.AuthUser, JWTSecret string) (string, string, error) {
+
+	err := repositories.UpdateLastLogin(user)
+	if err != nil {
+		return "", "", fmt.Errorf(" ошибка попытке обновить время входа: %v", err)
+	}
+
 	// Генерация access токена
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": user.Email,

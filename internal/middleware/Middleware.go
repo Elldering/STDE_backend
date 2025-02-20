@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"STDE_proj/internal/repositories"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -20,8 +21,9 @@ import (
 // - Проверяет наличие токена в заголовке
 // - Удаляет префикс "Bearer " из токена
 // - Проверяет валидность токена и его подписи
+// - Проверяет, находится ли токен в черном списке (инвалидирован)
 // - Извлекает и устанавливает значение username из claims в контекст
-// - Возвращает ошибку 401, если токен не валиден или отсутствует
+// - Возвращает ошибку 401, если токен не валиден, отсутствует или инвалидирован
 func AuthMiddleware(JWTSecret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
@@ -33,6 +35,20 @@ func AuthMiddleware(JWTSecret string) gin.HandlerFunc {
 		}
 
 		tokenString = tokenString[len("Bearer "):] // Удаляем префикс "Bearer "
+
+		// Проверяем, находится ли токен в черном списке
+		isInvalid, err := repositories.IsTokenInvalidated(tokenString)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка проверки токена"})
+			c.Abort()
+			return
+		}
+
+		if isInvalid {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Токен недействителен"})
+			c.Abort()
+			return
+		}
 
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
