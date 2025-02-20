@@ -6,6 +6,7 @@ import (
 	"STDE_proj/utils/db"
 	"STDE_proj/utils/time_web_s3"
 	"github.com/gin-gonic/gin"
+	"github.com/robfig/cron/v3"
 	"log"
 	"os"
 )
@@ -25,13 +26,13 @@ func main() {
 		log.Fatalf("Не удалось подключиться к S3: %v", err)
 	}
 
-	//cron := cron.New()
-	//cron.AddFunc("@every 5s", func() {
-	//	err := db.DeleteInactiveUser()
-	//	if err != nil {
-	//		log.Printf("Ошибка при вызове функции: %s", err)
-	//	}
-	//})
+	cron := cron.New()
+	cron.AddFunc("@every 15m", func() {
+		err := db.DeleteNoRegUser()
+		if err != nil {
+			log.Printf("Ошибка при вызове функции: %s", err)
+		}
+	})
 
 	// Инициализация экземпляра маршрутизатора
 	router := gin.Default()
@@ -47,7 +48,7 @@ func main() {
 	} else {
 		log.Println("Конфигурация тестовых маршрутов отключена")
 	}
-	//cron.Start()
+	cron.Start()
 	// Запускаем наш маршрутизатор (приложение)
 	if err := router.Run(":8080"); err != nil {
 		log.Fatalf("Ошибка запуска сервера: %v", err)
