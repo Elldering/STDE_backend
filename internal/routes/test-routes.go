@@ -8,16 +8,6 @@ import (
 func TestRoutes(router *gin.Engine) {
 	test := router.Group("api/test-routes")
 	{
-		user := router.Group("/user")
-		{
-			user.POST("/register", controllers.PostAuthUserHandler)
-			user.POST("/delete/:id", controllers.DeleteAuthUserHandler)
-		}
-
-		metrics := router.Group("/metrics")
-		{
-			metrics.GET("/user-count", controllers.MetricsHandler())
-		}
 
 		s3Group := router.Group("/s3")
 		{
