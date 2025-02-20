@@ -3,6 +3,7 @@ package routes
 import (
 	"STDE_proj/internal/controllers"
 	"STDE_proj/internal/controllers/Auth"
+	"STDE_proj/internal/controllers/RegisterController"
 	"STDE_proj/internal/middleware"
 	"github.com/gin-gonic/gin"
 	"os"
@@ -16,7 +17,14 @@ func Routes(router *gin.Engine) {
 		user := public.Group("/user")
 		{
 			// Маршрут не реализован как регистрация. Реализован как обычный Create
-			user.POST("/register", controllers.PostAuthUserHandler)
+			//user.POST("/add", controllers.PostAuthUserHandler)
+			register := user.Group("/register")
+			{
+				register.POST("/", RegisterController.RegisterControllerHandler)
+				register.PATCH("/verify/:id", RegisterController.VerifyControllerHandler)
+
+			}
+
 		}
 
 		auth := public.Group("/auth")
@@ -41,13 +49,13 @@ func Routes(router *gin.Engine) {
 			reviews.POST("/", controllers.PostReviewsHandler)
 		}
 
-		authUserGroups := protected.Group("/auth-user-groups")
+		AuthUserGroups := protected.Group("/auth-user-groups")
 		{
-			authUserGroups.GET("/", controllers.GetAuthUserGroupsAllHandler)
-			authUserGroups.GET("/:id", controllers.GetAuthUserGroupsByIdHandler)
-			authUserGroups.POST("/", controllers.PostAuthUserGroupsHandler)
-			authUserGroups.PUT("/:id", controllers.PutAuthUserGroupsHandler)
-			authUserGroups.DELETE("/:id", controllers.DeleteAuthUserGroupsHandler)
+			AuthUserGroups.GET("/", controllers.GetAuthUserGroupsAllHandler)
+			AuthUserGroups.GET("/:id", controllers.GetAuthUserGroupsByIdHandler)
+			AuthUserGroups.POST("/", controllers.PostAuthUserGroupsHandler)
+			AuthUserGroups.PUT("/:id", controllers.PutAuthUserGroupsHandler)
+			AuthUserGroups.DELETE("/:id", controllers.DeleteAuthUserGroupsHandler)
 		}
 
 		UserGroups := protected.Group("/user-groups")
