@@ -14,11 +14,12 @@ import (
 
 // Config структура для хранения всех конфигурационных данных
 type Config struct {
-	Server   ServerConfig   `mapstructure:"server"`
-	Database DatabaseConfig `mapstructure:"database"`
-	Logging  LoggingConfig  `mapstructure:"logging"`
-	CORS     CORSConfig     `mapstructure:"cors"`
-	S3       S3Config       `mapstructure:"s3"`
+	Server     ServerConfig     `mapstructure:"server"`
+	Database   DatabaseConfig   `mapstructure:"database"`
+	Logging    LoggingConfig    `mapstructure:"logging"`
+	CORS       CORSConfig       `mapstructure:"cors"`
+	S3         S3Config         `mapstructure:"s3"`
+	Prometheus PrometheusConfig `mapstructure:"prometheus"`
 }
 
 // ServerConfig структура для конфигурации сервера
@@ -57,6 +58,28 @@ type S3Config struct {
 	AccessKey string `mapstructure:"access_key"`
 	SecretKey string `mapstructure:"secret_key"`
 	Endpoint  string `mapstructure:"endpoint"`
+}
+
+// PrometheusConfig структура для конфигурации Prometheus
+type PrometheusConfig struct {
+	Global        GlobalConfig   `mapstructure:"global"`
+	ScrapeConfigs []ScrapeConfig `mapstructure:"scrape_configs"`
+}
+
+// GlobalConfig структура для глобальных настроек Prometheus
+type GlobalConfig struct {
+	ScrapeInterval string `mapstructure:"scrape_interval"`
+}
+
+// ScrapeConfig структура для настроек сбора данных Prometheus
+type ScrapeConfig struct {
+	JobName       string         `mapstructure:"job_name"`
+	StaticConfigs []StaticConfig `mapstructure:"static_configs"`
+}
+
+// StaticConfig структура для статической конфигурации целей сбора данных
+type StaticConfig struct {
+	Targets []string `mapstructure:"targets"`
 }
 
 var AppConfig *Config
