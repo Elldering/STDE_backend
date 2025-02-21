@@ -9,11 +9,11 @@ func Routes(router *gin.Engine) {
 
 	s3Group := router.Group("/s3")
 	{
-		// POST — загрузка файла
-		s3Group.POST("/upload", controllers.PostFileHandler)
+		// POST — загрузка файла с поддержкой пути *key (можно писать /папка/../папка/файл.расширение)
+		s3Group.POST("/upload/*key", controllers.PostFileHandler)
 
-		// DELETE — удаление файла
-		s3Group.DELETE("/files/:filename", controllers.DeleteFileHandler)
+		// DELETE с поддержкой пути *key (можно писать /папка/../папка/файл.расширение)
+		s3Group.DELETE("/files/*key", controllers.DeleteFileHandler)
 
 		// Список бакетов
 		s3Group.GET("/buckets", controllers.ListBucketsHandler)
@@ -21,14 +21,14 @@ func Routes(router *gin.Engine) {
 		// Список файлов
 		s3Group.GET("/files", controllers.ListFilesHandler)
 
-		// GET — получение файла/подписанного URL
-		s3Group.GET("/files/url/:bucket/:filename", controllers.GetFileURLHandler)
+		// GET — получение подписанного URL с поддержкой пути *key (можно писать /папка/../папка/файл.расширение)
+		s3Group.GET("/files/url/*key", controllers.GetFileURLHandler)
 
-		// Скачивание файла
-		s3Group.GET("/download/:filename", controllers.DownloadFileHandler)
+		// Скачивание файла с поддержкой пути
+		s3Group.GET("/download/*key", controllers.DownloadFileHandler)
 
-		// Пока не сделал
-		//s3Group.PUT("/files/:filename", s3Controller.PutFileHandler)
+		// Пока не сделано
+		// s3Group.PUT("/files/:key", controllers.PutFileHandler)
 	}
 
 	user := router.Group("/user")

@@ -4,8 +4,9 @@ import (
 	"STDE_proj/internal/services"
 	"context"
 	"github.com/gin-gonic/gin"
-	"mime/multipart"
+	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 func PostFileHandler(c *gin.Context) {
@@ -14,21 +15,27 @@ func PostFileHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Необходимо загрузить файл"})
 		return
 	}
+
 	file, err := fileHeader.Open()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Не удалось открыть файл"})
 		return
 	}
-	defer func(file multipart.File) {
-		err := file.Close()
-		if err != nil {
+	defer file.Close()
 
-		}
-	}(file)
+	fileBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Не удалось прочитать файл"})
+		return
+	}
 
-	fileName := fileHeader.Filename
+	objectKey := strings.TrimLeft(c.Param("key"), "/")
+	if objectKey == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Не указан ключ объекта"})
+		return
+	}
 
-	url, err := services.PostFile(context.TODO(), file, fileName)
+	url, err := services.PostFile(context.TODO(), fileBytes, objectKey)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -37,12 +44,13 @@ func PostFileHandler(c *gin.Context) {
 }
 
 func DeleteFileHandler(c *gin.Context) {
-	fileName := c.Param("filename")
-	if fileName == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Имя файла не указано"})
+	objectKey := strings.TrimLeft(c.Param("key"), "/")
+	if objectKey == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Ключ объекта не указан"})
 		return
 	}
-	err := services.DeleteFile(context.TODO(), fileName)
+
+	err := services.DeleteFile(context.TODO(), []string{objectKey})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -51,34 +59,33 @@ func DeleteFileHandler(c *gin.Context) {
 }
 
 func GetFileURLHandler(c *gin.Context) {
-	fileName := c.Param("filename")
-	bucketName := c.Param("bucket")
-	if fileName == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Имя файла не указано"})
+	bucket := c.Param("bucket")
+	objectKey := strings.TrimLeft(c.Param("key"), "/")
+	if bucket == "" || objectKey == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bucket and object key are required"})
 		return
 	}
-	url := services.GetFileURL(context.TODO(), bucketName+"/"+fileName)
 
+	url := services.GetFileURL(context.TODO(), objectKey)
 	c.JSON(http.StatusOK, gin.H{"url": url})
 }
 
 func DownloadFileHandler(c *gin.Context) {
-	fileName := c.Param("filename")
-	if fileName == "" {
+	objectKey := strings.TrimLeft(c.Param("key"), "/")
+	if objectKey == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Имя файла не указано"})
 		return
 	}
-	data, err := services.DownloadFile(context.TODO(), fileName)
+	data, err := services.DownloadFile(context.TODO(), objectKey)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	// Отдаем данные как бинарный поток
 	c.Data(http.StatusOK, "application/octet-stream", data)
 }
 
 func ListFilesHandler(c *gin.Context) {
-	prefix := c.Query("prefix") // если не указан, будет пустая строка
+	prefix := c.Query("prefix")
 	res, err := services.ListFiles(context.TODO(), prefix)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -93,5 +100,5 @@ func ListBucketsHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"buckets": res.Buckets})
+	c.JSON(http.StatusOK, gin.H{"buckets": res})
 }
