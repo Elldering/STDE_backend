@@ -2,64 +2,55 @@ package routes
 
 import (
 	"STDE_proj/internal/controllers"
-	"STDE_proj/internal/controllers/Auth"
-	"STDE_proj/internal/controllers/RegisterController"
-	"STDE_proj/internal/middleware"
 	"github.com/gin-gonic/gin"
-	"os"
 )
 
-func Routes(router *gin.Engine) {
-	JWTSecret := os.Getenv("JWT_SECRET")
-
-	public := router.Group("/api/public")
+func TestRoutes(router *gin.Engine) {
+	test := router.Group("api/test-routes")
 	{
-		user := public.Group("/user")
+
+		s3Group := router.Group("/s3")
 		{
-			user.GET("/logout", Auth.LogoutHandler)
-			// Маршрут не реализован как регистрация. Реализован как обычный Create
-			//user.POST("/add", controllers.PostAuthUserHandler)
-			register := user.Group("/register")
-			{
-				register.POST("/", RegisterController.RegisterControllerHandler)
-				register.PATCH("/verify/:id", RegisterController.VerifyControllerHandler)
+			// POST — загрузка файла
+			s3Group.POST("/upload", controllers.PostFileHandler)
 
-			}
+			// DELETE — удаление файла
+			s3Group.DELETE("/files/:filename", controllers.DeleteFileHandler)
 
+			// Список бакетов
+			s3Group.GET("/buckets", controllers.ListBucketsHandler)
+
+			// Список файлов
+			s3Group.GET("/files", controllers.ListFilesHandler)
+
+			// GET — получение файла/подписанного URL
+			s3Group.GET("/files/url/:bucket/:filename", controllers.GetFileURLHandler)
+
+			// Скачивание файла
+			s3Group.GET("/download/:filename", controllers.DownloadFileHandler)
+
+			// Пока не сделал
+			//s3Group.PUT("/files/:filename", s3Controller.PutFileHandler)
 		}
 
-		auth := public.Group("/auth")
+		// Создание вложенной группы маршрутов для "reviews" внутри группы "test"
+		reviews := test.Group("/reviews")
 		{
-			auth.POST("/login", Auth.LoginHandler)
-			auth.POST("/refresh", Auth.RefreshToken)
-		}
-	}
-
-	protected := router.Group("/api/private")
-	protected.Use(middleware.AuthMiddleware(JWTSecret))
-	{
-		user := protected.Group("/user")
-		{
-			user.POST("/delete/:id", controllers.DeleteAuthUserHandler)
-		}
-
-		reviews := protected.Group("/reviews")
-		{
+			// Обработчики маршрутов для "reviews"
 			reviews.GET("/", controllers.GetReviewsAllHandler)
 			reviews.GET("/:id", controllers.GetReviewsByIdHandler)
 			reviews.POST("/", controllers.PostReviewsHandler)
 		}
-
-		AuthUserGroups := protected.Group("/auth-user-groups")
+		authUserGroups := test.Group("/auth-user-groups")
 		{
-			AuthUserGroups.GET("/", controllers.GetAuthUserGroupsAllHandler)
-			AuthUserGroups.GET("/:id", controllers.GetAuthUserGroupsByIdHandler)
-			AuthUserGroups.POST("/", controllers.PostAuthUserGroupsHandler)
-			AuthUserGroups.PUT("/:id", controllers.PutAuthUserGroupsHandler)
-			AuthUserGroups.DELETE("/:id", controllers.DeleteAuthUserGroupsHandler)
+			// Auth user groups
+			authUserGroups.GET("/", controllers.GetAuthUserGroupsAllHandler)
+			authUserGroups.GET("/:id", controllers.GetAuthUserGroupsByIdHandler)
+			authUserGroups.POST("/", controllers.PostAuthUserGroupsHandler)
+			authUserGroups.PUT("/:id", controllers.PutAuthUserGroupsHandler)
+			authUserGroups.DELETE("/:id", controllers.DeleteAuthUserGroupsHandler)
 		}
-
-		UserGroups := protected.Group("/user-groups")
+		UserGroups := test.Group("/user-groups")
 		{
 			UserGroups.GET("/", controllers.GetUserGroupsHandler)
 			UserGroups.POST("/", controllers.PostUserGroupHandler)
@@ -67,8 +58,7 @@ func Routes(router *gin.Engine) {
 			UserGroups.DELETE("/:id", controllers.DeleteUserGroupHandler)
 			UserGroups.PUT("/:id", controllers.PutUserGroupHandler)
 		}
-
-		Permissions := protected.Group("/permissions")
+		Permissions := test.Group("/permissions")
 		{
 			Permissions.GET("/", controllers.GetPermissionHandler)
 			Permissions.POST("/", controllers.PostPermissionHandler)
@@ -76,8 +66,7 @@ func Routes(router *gin.Engine) {
 			Permissions.DELETE("/:id", controllers.DeletePermissionHandler)
 			Permissions.PUT("/:id", controllers.PutPermissionHandler)
 		}
-
-		Position := protected.Group("/position")
+		Position := test.Group("/position")
 		{
 			Position.GET("/", controllers.GetPositionsHandler)
 			Position.POST("/", controllers.PostPositionHandler)
@@ -85,8 +74,7 @@ func Routes(router *gin.Engine) {
 			Position.DELETE("/:id", controllers.DeletePositionHandler)
 			Position.PUT("/:id", controllers.PutPositionHandler)
 		}
-
-		AuthGroupsPermissions := protected.Group("/auth-groups-permissions")
+		AuthGroupsPermissions := test.Group("/auth-groups-permissions")
 		{
 			AuthGroupsPermissions.GET("/", controllers.GetAuthGroupPermissionsHandler)
 			AuthGroupsPermissions.GET("/:id", controllers.GetAuthGroupPermissionsIdHandler)
@@ -94,8 +82,7 @@ func Routes(router *gin.Engine) {
 			AuthGroupsPermissions.PUT("/:id", controllers.PutAuthGroupPermissionsHandler)
 			AuthGroupsPermissions.DELETE("/:id", controllers.DeleteAuthGroupPermissionsHandler)
 		}
-
-		UserProfile := protected.Group("/user-profile")
+		UserProfile := test.Group("/user-profile")
 		{
 			UserProfile.GET("/", controllers.GetUserProfileHandler)
 			UserProfile.GET("/:id", controllers.GetUserProfileByIdHandler)
@@ -105,5 +92,4 @@ func Routes(router *gin.Engine) {
 		}
 
 	}
-
 }
