@@ -35,6 +35,7 @@ func Routes(router *gin.Engine) {
 		}
 	}
 
+
 	protected := router.Group("/api/private")
 	protected.Use(middleware.AuthMiddleware(JWTSecret))
 	{
