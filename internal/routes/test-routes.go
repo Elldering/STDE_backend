@@ -90,6 +90,14 @@ func TestRoutes(router *gin.Engine) {
 			UserProfile.PUT("/:id", controllers.PutUserProfileHandler)
 			UserProfile.DELETE("/:id", controllers.DeleteUserProfileHandler)
 		}
+		Basket := test.Group("/basket")
+		{
+			Basket.GET("/", controllers.GetBasketsHandler)
+			Basket.GET("/:id", controllers.GetBasketByIdUserHandler)
+			Basket.POST("/", controllers.PostBasketHandler)
+			//Basket.PUT("/:id", controllers.PutBasketHandler)
+			Basket.DELETE("/*id", controllers.DeleteBasketHandler) //Добавить "user/" для удаления всех позиций у пользователя
+		}
 
 	}
 }

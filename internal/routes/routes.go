@@ -35,13 +35,21 @@ func Routes(router *gin.Engine) {
 		}
 	}
 
-
 	protected := router.Group("/api/private")
 	protected.Use(middleware.AuthMiddleware(JWTSecret))
 	{
 		user := protected.Group("/user")
 		{
 			user.POST("/delete/:id", controllers.DeleteAuthUserHandler)
+
+			Basket := user.Group("/basket")
+			{
+				Basket.GET("/", controllers.GetBasketsHandler)
+				Basket.GET("/:id", controllers.GetBasketByIdUserHandler)
+				Basket.POST("/", controllers.PostBasketHandler)
+				//Basket.PUT("/:id", controllers.PutBasketHandler)
+				Basket.DELETE("/*id", controllers.DeleteBasketHandler) //Добавить "user/" для удаления всех позиций у пользователя
+			}
 		}
 
 		reviews := protected.Group("/reviews")
