@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func Register(username string, password string) error {
+func Register(login string, password string) error {
 
 	hashedPassword, err := hash.HashPassword(password)
 	if err != nil {
@@ -14,5 +14,5 @@ func Register(username string, password string) error {
 		return err
 	}
 	password = hashedPassword
-	return RegisterRepository.Register(username, password)
+	return RegisterRepository.Register(login, password)
 }

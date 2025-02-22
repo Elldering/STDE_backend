@@ -9,7 +9,7 @@ import (
 
 func RegisterControllerHandler(c *gin.Context) {
 	var registerRequest struct {
-		Username string `json:"username"`
+		Login    string `json:"login"`
 		Password string `json:"password"`
 	}
 
@@ -18,10 +18,10 @@ func RegisterControllerHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Некорректный формат данных"})
 		return
 	}
-	err := RegisterService.Register(registerRequest.Username, registerRequest.Password)
+	err := RegisterService.Register(registerRequest.Login, registerRequest.Password)
 	if err != nil {
 		log.Printf("Ошибка при регистрации: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при регистрации"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	log.Println("Регистрация прошла успешно")

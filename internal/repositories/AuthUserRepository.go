@@ -2,18 +2,18 @@ package repositories
 
 import (
 	"STDE_proj/internal/models"
-	"STDE_proj/utils/db"
+	"STDE_proj/utils/database"
 	"errors"
 	"fmt"
 	"log"
 )
 
 //func GetAllAuthUser()([]models.AuthUser, error){
-//	if db.DB == nil {
+//	if database.DB == nil {
 //		log.Println("Ошибка: подключение к базе данных не инициализировано")
 //		return nil, fmt.Errorf("подключение к базе данных не инициализировано")
 //	}
-//	rows, err := db.DB.Query("SELECT id, password, last_login, email, phone_number, is_super_user, is_email, is_number_verify, is_blocked, FROM permission")
+//	rows, err := database.DB.Query("SELECT id, password, last_login, email, phone_number, is_super_user, is_email, is_number_verify, is_blocked, FROM permission")
 //	if err != nil {
 //		return nil, err
 //	}
@@ -32,13 +32,13 @@ import (
 //}
 
 func PostAuthUser(data models.AuthUser) error {
-	if db.DB == nil {
+	if database.DB == nil {
 		log.Println("Ошибка: подключение к базе данных не инициализировано")
 		return errors.New("подключение к базе данных не инициализировано")
 	}
 
 	query := "INSERT INTO auth_user (password, email, phone_number) VALUES ($1, $2, $3)"
-	result, err := db.DB.Exec(query, data.Password, data.Email, data.PhoneNumber)
+	result, err := database.DB.Exec(query, data.Password, data.Email, data.PhoneNumber)
 	if err != nil {
 		log.Printf("Ошибка при добавлении: %v", err)
 		return fmt.Errorf("ошибка при добавлении: %v", err)
@@ -58,12 +58,12 @@ func PostAuthUser(data models.AuthUser) error {
 }
 
 func DeleteAuthUser(id int) error {
-	if db.DB == nil {
+	if database.DB == nil {
 		log.Println("Ошибка: подключение к базе данных не инициализировано")
 		return errors.New("подключение к базе данных не инициализировано")
 	}
 
-	result, err := db.DB.Exec("DELETE FROM auth_user WHERE id=$1", id)
+	result, err := database.DB.Exec("DELETE FROM auth_user WHERE id=$1", id)
 	if err != nil {
 		log.Printf("Ошибка при удалении Пользователя с id %d: %v", id, err)
 		return fmt.Errorf("ошибка при удалении Пользователя: %v", err)

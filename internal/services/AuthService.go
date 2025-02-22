@@ -31,7 +31,7 @@ func GenerateTokens(user *models.AuthUser, JWTSecret string) (string, string, er
 	// Генерация refresh токена
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": user.Email,
-		"exp":      time.Now().Add(time.Hour * 24 * 7).Unix(), // Refresh токен действует 7 дней
+		"exp":      time.Now().Add(time.Hour * 24 * 5).Unix(), // Refresh токен действует 7 дней
 	})
 
 	refreshTokenString, err := refreshToken.SignedString([]byte(JWTSecret))

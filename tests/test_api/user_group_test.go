@@ -1,6 +1,7 @@
 package test_api
 
 import (
+	"STDE_proj/utils/database"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -9,7 +10,6 @@ import (
 
 	"STDE_proj/configs"
 	"STDE_proj/internal/routes"
-	"STDE_proj/utils/db"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -30,7 +30,7 @@ func SetupTestRouter() *gin.Engine {
 	}
 
 	// Подключаемся к базе данных
-	if err := db.Connect(); err != nil {
+	if err := database.Connect(); err != nil {
 		panic("Ошибка подключения к базе данных: " + err.Error())
 	}
 

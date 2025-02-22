@@ -21,7 +21,7 @@ import (
 func LoginHandler(ctx *gin.Context) {
 	// Анонимная структура, в которую будут подставлены логин и пароль пользователя
 	var loginRequest struct {
-		Username string `json:"username"`
+		Login    string `json:"login"`
 		Password string `json:"password"`
 	}
 
@@ -32,11 +32,11 @@ func LoginHandler(ctx *gin.Context) {
 		return
 	}
 
-	accessToken, refreshToken, err := services.Authenticate(loginRequest.Username, loginRequest.Password, JWTSecret)
+	accessToken, refreshToken, err := services.Authenticate(loginRequest.Login, loginRequest.Password, JWTSecret)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"access token": accessToken, "refresh token": refreshToken})
+	ctx.JSON(http.StatusOK, gin.H{"access": accessToken, "refresh": refreshToken})
 }

@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"STDE_proj/internal/models"
-	"STDE_proj/utils/db"
+	"STDE_proj/utils/database"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -10,11 +10,11 @@ import (
 )
 
 func GetAuthUserGroupsAll() ([]models.AuthUserGroups, error) {
-	if db.DB == nil {
+	if database.DB == nil {
 		log.Println("Ошибка: подключение к базе данных не инициализировано")
 		return nil, fmt.Errorf("подключение к базе данных не инициализировано")
 	}
-	query, err := db.DB.Query("SELECT id, group_id, user_id FROM auth_user_groups")
+	query, err := database.DB.Query("SELECT id, group_id, user_id FROM auth_user_groups")
 	if err != nil {
 		return nil, err
 	}
@@ -32,12 +32,12 @@ func GetAuthUserGroupsAll() ([]models.AuthUserGroups, error) {
 }
 
 func GetAuthUserGroupsById(id int) (models.AuthUserGroups, error) {
-	if db.DB == nil {
+	if database.DB == nil {
 		log.Println("Ошибка: подключение к базе данных не инициализировано")
 		return models.AuthUserGroups{}, fmt.Errorf("подключение к базе данных не инициализировано")
 	}
 
-	row := db.DB.QueryRow("SELECT id, group_id, user_id FROM auth_user_groups WHERE id = $1", id)
+	row := database.DB.QueryRow("SELECT id, group_id, user_id FROM auth_user_groups WHERE id = $1", id)
 	var data models.AuthUserGroups
 	if err := row.Scan(&data.ID, &data.GroupID, &data.UserID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -51,18 +51,18 @@ func GetAuthUserGroupsById(id int) (models.AuthUserGroups, error) {
 }
 
 func PostAuthUserGroups(data models.AuthUserGroups) error {
-	if db.DB == nil {
+	if database.DB == nil {
 		log.Println("Ошибка: подключение к базе данных не инициализировано")
 		return fmt.Errorf("подключение к базе данных не инициализировано")
 	}
 
 	query := "INSERT INTO auth_user_groups (group_id, user_id) VALUES ($1, $2)"
-	_, err := db.DB.Exec(query, data.GroupID, data.UserID)
+	_, err := database.DB.Exec(query, data.GroupID, data.UserID)
 	return err
 }
 
 func PutAuthUserGroups(id int, data models.AuthUserGroups) error {
-	if db.DB == nil {
+	if database.DB == nil {
 		log.Println("Ошибка: подключение к базе данных не инициализировано")
 		return errors.New("подключение к базе данных не инициализировано")
 	}
@@ -72,7 +72,7 @@ func PutAuthUserGroups(id int, data models.AuthUserGroups) error {
 		return errors.New("поля group_id и user_id не могут быть пустыми")
 	}
 
-	row := db.DB.QueryRow("SELECT id FROM auth_user_groups WHERE id=$1", id)
+	row := database.DB.QueryRow("SELECT id FROM auth_user_groups WHERE id=$1", id)
 	var existingID int
 	if err := row.Scan(&existingID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -83,7 +83,7 @@ func PutAuthUserGroups(id int, data models.AuthUserGroups) error {
 		return fmt.Errorf("ошибка при проверке существования связи группы и пользователями: %v", err)
 	}
 
-	exec, err := db.DB.Exec("UPDATE auth_user_groups SET group_id=$1, user_id=$2 WHERE id=$3", data.GroupID, data.UserID, id)
+	exec, err := database.DB.Exec("UPDATE auth_user_groups SET group_id=$1, user_id=$2 WHERE id=$3", data.GroupID, data.UserID, id)
 	if err != nil {
 		log.Printf("Ошибка при обновлении связи группы и пользователями с id %d: %v", id, err)
 		return fmt.Errorf("ошибка при обновлении связи группы и пользователями: %v", err)
@@ -103,13 +103,13 @@ func PutAuthUserGroups(id int, data models.AuthUserGroups) error {
 }
 
 func DeleteAuthUserGroups(id int) error {
-	if db.DB == nil {
+	if database.DB == nil {
 		log.Println("Ошибка: подключение к базе данных не инициализировано")
 		return fmt.Errorf("подключение к базе данных не инициализировано")
 	}
 
 	// Удаление группы пользователей
-	exec, err := db.DB.Exec("DELETE FROM auth_user_groups WHERE id=$1", id)
+	exec, err := database.DB.Exec("DELETE FROM auth_user_groups WHERE id=$1", id)
 	if err != nil {
 		log.Println("Ошибка при удалении связи группы и пользователя:", err)
 		return fmt.Errorf("ошибка при удалении связи группы и пользователя: %v", err)

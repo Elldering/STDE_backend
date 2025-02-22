@@ -1,12 +1,10 @@
-package db
+package database
 
 import (
 	"STDE_proj/configs"
 	"database/sql"
 	"fmt"
 	"log"
-
-	_ "github.com/lib/pq" // Импорт драйвера PostgreSQL
 )
 
 var DB *sql.DB

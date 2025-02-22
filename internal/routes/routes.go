@@ -16,7 +16,7 @@ func Routes(router *gin.Engine) {
 	{
 		user := public.Group("/user")
 		{
-			user.GET("/logout", Auth.LogoutHandler)
+			user.POST("/logout", Auth.LogoutHandler)
 			// Маршрут не реализован как регистрация. Реализован как обычный Create
 			//user.POST("/add", controllers.PostAuthUserHandler)
 			register := user.Group("/register")
@@ -40,7 +40,7 @@ func Routes(router *gin.Engine) {
 	{
 		user := protected.Group("/user")
 		{
-			user.POST("/delete/:id", controllers.DeleteAuthUserHandler)
+			user.DELETE("/delete/:id", controllers.DeleteAuthUserHandler)
 		}
 
 		reviews := protected.Group("/reviews")

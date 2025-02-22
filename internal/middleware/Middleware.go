@@ -24,20 +24,21 @@ import (
 // - Проверяет, находится ли токен в черном списке (инвалидирован)
 // - Извлекает и устанавливает значение username из claims в контекст
 // - Возвращает ошибку 401, если токен не валиден, отсутствует или инвалидирован
+
 func AuthMiddleware(JWTSecret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenString := c.GetHeader("Authorization")
 
-		if tokenString == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Нет токена в заголовке"})
+		access := c.GetHeader("Authorization")
+
+		if access == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Access токена нет в заголовке"})
 			c.Abort()
 			return
 		}
 
-		tokenString = tokenString[len("Bearer "):] // Удаляем префикс "Bearer "
-
+		access = access[len("Bearer "):] // Удаляем префикс "Bearer "
 		// Проверяем, находится ли токен в черном списке
-		isInvalid, err := repositories.IsTokenInvalidated(tokenString)
+		isInvalid, err := repositories.IsAccessTokenInvalidated(access)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка проверки токена"})
 			c.Abort()
@@ -50,7 +51,7 @@ func AuthMiddleware(JWTSecret string) gin.HandlerFunc {
 			return
 		}
 
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.Parse(access, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
