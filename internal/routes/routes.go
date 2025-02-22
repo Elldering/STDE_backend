@@ -112,6 +112,23 @@ func Routes(router *gin.Engine) {
 			UserProfile.PUT("/:id", controllers.PutUserProfileHandler)
 			UserProfile.DELETE("/:id", controllers.DeleteUserProfileHandler)
 		}
+		
+		Menu := protected.Group("/menu")
+		{
+			Menu.GET("/", controllers.GetMenuHandler)
+			Menu.GET("/:id", controllers.GetMenuByIdHandler)
+			Menu.POST("/", controllers.PostMenuHandler)
+			Menu.PUT("/:id", controllers.PutMenuHandler)
+			Menu.DELETE("/:id", controllers.DeleteMenuHandler)
+		}
+		MenuPosition := protected.Group("/menu-position")
+		{
+			MenuPosition.GET("/", controllers.GetMenuPositionsHandler)
+			MenuPosition.GET("/:id", controllers.GetMenuPositionByIdHandler)
+			MenuPosition.POST("/", controllers.PostMenuPositionHandler)
+			MenuPosition.PUT("/:id", controllers.PutMenuPositionHandler)
+			MenuPosition.DELETE("/:id", controllers.DeleteMenuPositionHandler)
+		}
 
 	}
 
