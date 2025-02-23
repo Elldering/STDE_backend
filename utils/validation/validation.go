@@ -1,8 +1,9 @@
 package validation
 
 import (
-	"errors"
+	"STDE_proj/internal/models"
 	"fmt"
+	"github.com/dlclark/regexp2"
 	"regexp"
 )
 
@@ -30,20 +31,23 @@ func ValidatePassword(password string) bool {
 	if len(password) < 8 {
 		return false
 	}
-	re := regexp.MustCompile(`^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>]{8,}$`)
-	return re.MatchString(password)
+	re := regexp2.MustCompile(`^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>]{8,}$`, 0)
+	match, _ := re.MatchString(password)
+	return match
 }
 
 // CheckEmailOrPhoneNumber проверяет, является ли входная строка email или номером телефона.
 // Возвращает "email", "phone" или ошибку, если строка не соответствует ни одному из форматов.
-func CheckEmailOrPhoneNumber(login string) (string, error) {
-	if ValidateEmail(login) {
-		return "email", nil
+func CheckEmailOrPhoneNumber(data *models.AuthUser) error {
+	if ValidateEmail(data.Login) {
+		data.TypeLogin = "email"
+		return nil
 	}
-	if ValidatePhoneNumber(login) {
-		return "phone", nil
+	if ValidatePhoneNumber(data.Login) {
+		data.TypeLogin = "phone_number"
+		return nil
 	}
-	return "", errors.New("некорректный логин: строка должна быть email или номером телефона")
+	return fmt.Errorf("логин должен быть email или номером телефона")
 }
 
 // ValidateEmptyFields проверяет, что ни одно из переданных полей не пустое.

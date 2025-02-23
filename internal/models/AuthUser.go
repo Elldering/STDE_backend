@@ -17,4 +17,6 @@ type AuthUser struct {
 	UserProfileID  int       `json:"user_profile_id"`
 	Balance        float64   `json:"balance"`
 	UserRID        int       `json:"user_r_id"`
+	Login          string    `json:"login"`
+	TypeLogin      string    `json:"type_login"`
 }

@@ -4,6 +4,8 @@ import (
 	"STDE_proj/internal/models"
 	"STDE_proj/internal/repositories"
 	"STDE_proj/utils/hash"
+	"STDE_proj/utils/validation"
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"time"
@@ -60,9 +62,32 @@ func GenerateAccessToken(user *models.AuthUser, JWTSecret string) (string, error
 
 // Authenticate аутентифицирует пользователя на основе логина и пароля
 func Authenticate(login, password, JWTSecret string) (string, string, error) {
+
+	//err := validation.CheckEmailOrPhoneNumber(login)
+	//if err != nil {
+	//	return "", "", err
+	//}
+
 	user, err := repositories.FindByUsername(login)
 	if err != nil {
-		return "", "", fmt.Errorf("ошибка при поиске пользователя: %v", err)
+		return "", "", err
+	}
+
+	//switch typeLogin {
+	//case "email":
+	//	err = repositories.CheckVerifyEmail(login)
+	//	if err != nil {
+	//		return "", "", err
+	//	}
+	//case "phone_number":
+	//	err = repositories.CheckVerifyPhoneNumber(login)
+	//	if err != nil {
+	//		return "", "", err
+	//	}
+	//}
+
+	if !validation.ValidatePassword(password) {
+		return "", "", errors.New("некорректный пароль")
 	}
 
 	if !hash.CheckPasswordHash(password, user.Password) {

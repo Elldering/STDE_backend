@@ -10,15 +10,15 @@ import (
 	"log"
 )
 
-func Register(registerData models.Register) error {
+func Register(data models.AuthUser) error {
 	if database.DB == nil {
 		log.Println("Ошибка: подключение к базе данных не инициализировано")
 		return fmt.Errorf("подключение к базе данных не инициализировано")
 	}
-	var AuthUserData models.AuthUser
 	var phoneNumber sql.NullString
-	query := database.DB.QueryRow("SELECT id, email, phone_number FROM auth_user WHERE email = $1 OR phone_number = $2", registerData.Login, registerData.Login)
-	err := query.Scan(&AuthUserData.ID, &AuthUserData.Email, &phoneNumber)
+
+	query := database.DB.QueryRow("SELECT id, email, phone_number FROM auth_user WHERE email = $1 OR phone_number = $2", data.Login, data.Login)
+	err := query.Scan(&data.ID, &data.Email, &phoneNumber)
 	if err == nil {
 		// Пользователь с указанным email или номером телефона уже существует
 		log.Println("Пользователь с таким email или номером телефона уже существует")
@@ -31,9 +31,20 @@ func Register(registerData models.Register) error {
 		return err
 	}
 
-	// SQL-запрос для вставки данных в таблицу auth_user
-	execAuthUser := "INSERT INTO auth_user (email, password) VALUES ($1, $2) RETURNING id"
-	err = database.DB.QueryRow(execAuthUser, registerData.Login, registerData.Password).Scan(&AuthUserData.ID)
+	log.Println(data.TypeLogin)
+	log.Println(data.Login)
+
+	switch data.TypeLogin {
+	case "email":
+		execAuthUser := "INSERT INTO auth_user (email, password) VALUES ($1, $2) RETURNING id"
+		err = database.DB.QueryRow(execAuthUser, data.Login, data.Password).Scan(&data.ID)
+	case "phone_number":
+		execAuthUser := "INSERT INTO auth_user (phone_number, password) VALUES ($1, $2) RETURNING id"
+		err = database.DB.QueryRow(execAuthUser, data.Login, data.Password).Scan(&data.ID)
+	default:
+		return fmt.Errorf("неизвестный тип логина: %s", data.TypeLogin)
+	}
+
 	if err != nil {
 		log.Printf("Ошибка при добавлении пользователя в базу данных: %v", err)
 		return err
@@ -42,19 +53,25 @@ func Register(registerData models.Register) error {
 
 	verifyCode := smtp_sender.GenerateCode()
 
-	err = smtp_sender.SendEmail(registerData.Login, verifyCode)
-	if err != nil {
-		log.Fatalf("Ошибка при отправке письма: %v", err)
-	}
-
 	// SQL-запрос для вставки данных в таблицу verify_code
 	execVerifyCode := "INSERT INTO verify_code (code, auth_user_id) VALUES ($1, $2)"
-	_, err = database.DB.Exec(execVerifyCode, verifyCode, AuthUserData.ID)
+	_, err = database.DB.Exec(execVerifyCode, verifyCode, data.ID)
 	if err != nil {
 		log.Printf("Ошибка при добавлении верификационного кода в базу данных: %v", err)
 		return err
 	}
 	log.Println("Код успешно добавлен")
+
+	switch data.TypeLogin {
+	case "email":
+		err = smtp_sender.SendEmail(data.Login, verifyCode)
+		if err != nil {
+			log.Fatalf("Ошибка при отправке письма: %v", err)
+		}
+	case "phone_number":
+		// Не реализованный метод верификации номера телефона
+		log.Println("PASS")
+	}
 
 	// Дополнительный код для регистрации пользователя, если он не существует
 	// Например, хеширование пароля и создание нового пользователя в базе данных

@@ -10,7 +10,7 @@ import (
 
 func RegisterControllerHandler(c *gin.Context) {
 
-	var data models.Register
+	var data models.AuthUser
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		log.Printf("Некорректный JSON: %v", err)
