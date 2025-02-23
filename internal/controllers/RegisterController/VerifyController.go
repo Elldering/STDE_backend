@@ -29,7 +29,7 @@ func VerifyControllerHandler(c *gin.Context) {
 	err = RegisterService.Verify(id, req.Code)
 	if err != nil {
 		log.Printf("Ошибка при подтверждении кода: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при подтверждении кода"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	log.Println("Почта успешно подтверждена")

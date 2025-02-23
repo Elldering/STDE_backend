@@ -3,57 +3,48 @@ package validation
 import (
 	"errors"
 	"fmt"
+	"github.com/dlclark/regexp2"
 	"regexp"
 )
 
 // ValidateEmail проверяет, является ли email корректным
-
-import (
-	"net/mail"
-	"strings"
-)
-
-func ValidateEmail(email string) (bool, error) {
-	// Проверка длины
-	if len(email) < 5 || len(email) > 254 {
-		return false, errors.New("длина email должна быть от 5 до 254 символов")
+func ValidateEmail(email string) bool {
+	if len(email) < 0 {
+		return false
 	}
-
-	// Проверка с использованием регулярного выражения
 	re := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
-	if !re.MatchString(email) {
-		return false, errors.New("некорректный формат email")
-	}
-
-	// Проверка доменной части
-	parts := strings.Split(email, "@")
-	if len(parts) != 2 {
-		return false, errors.New("email должен содержать символ @")
-	}
-	domain := parts[1]
-	if strings.HasPrefix(domain, ".") || strings.HasSuffix(domain, ".") {
-		return false, errors.New("доменная часть не может начинаться или заканчиваться на точку")
-	}
-	if !strings.Contains(domain, ".") {
-		return false, errors.New("доменная часть должна содержать хотя бы одну точку")
-	}
-
-	// Проверка с использованием net/mail
-	_, err := mail.ParseAddress(email)
-	if err != nil {
-		return false, fmt.Errorf("некорректный email: %v", err)
-	}
-
-	return true, nil
+	return re.MatchString(email)
 }
 
 // ValidatePhoneNumber проверяет, является ли номер телефона корректным
 func ValidatePhoneNumber(phone string) bool {
+	if len(phone) < 0 {
+		return false
+	}
 	re := regexp.MustCompile(`^\+?[1-9]\d{10,14}$`)
 	return re.MatchString(phone)
 }
 
-func ValidEmptyField(fields ...string) (bool, error) {
+func ValidatePassword(password string) bool {
+	if len(password) < 8 {
+		return false
+	}
+	re := regexp2.MustCompile(`^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>]{8,}$`, 0)
+	match, _ := re.MatchString(password)
+	return match
+}
+
+func CheckEmailOrPhoneNumber(login string) (string, error) {
+	if ValidateEmail(login) {
+		return "email", nil
+	}
+	if ValidatePhoneNumber(login) {
+		return "phone", nil
+	}
+	return "", errors.New("некорректный логин")
+}
+
+func ValidateEmptyField(fields ...string) (bool, error) {
 	for _, field := range fields {
 		if field == "" {
 			return false, fmt.Errorf("поле не может быть пустым")
