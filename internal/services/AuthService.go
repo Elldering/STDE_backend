@@ -61,36 +61,28 @@ func GenerateAccessToken(user *models.AuthUser, JWTSecret string) (string, error
 }
 
 // Authenticate аутентифицирует пользователя на основе логина и пароля
-func Authenticate(login, password, JWTSecret string) (string, string, error) {
+func Authenticate(data models.AuthUser, JWTSecret string) (string, string, error) {
 
-	//err := validation.CheckEmailOrPhoneNumber(login)
-	//if err != nil {
-	//	return "", "", err
-	//}
-
-	user, err := repositories.FindByUsername(login)
+	err := validation.CheckEmailOrPhoneNumber(&data)
 	if err != nil {
 		return "", "", err
 	}
 
-	//switch typeLogin {
-	//case "email":
-	//	err = repositories.CheckVerifyEmail(login)
-	//	if err != nil {
-	//		return "", "", err
-	//	}
-	//case "phone_number":
-	//	err = repositories.CheckVerifyPhoneNumber(login)
-	//	if err != nil {
-	//		return "", "", err
-	//	}
-	//}
+	user, err := repositories.FindByUsername(data.Login)
+	if err != nil {
+		return "", "", err
+	}
 
-	if !validation.ValidatePassword(password) {
+	err = repositories.CheckVerifyEmail(data.Login)
+	if err != nil {
+		return "", "", err
+	}
+
+	if !validation.ValidatePassword(data.Password) {
 		return "", "", errors.New("некорректный пароль")
 	}
 
-	if !hash.CheckPasswordHash(password, user.Password) {
+	if !hash.CheckPasswordHash(data.Password, user.Password) {
 		return "", "", fmt.Errorf("неверные учетные данные")
 	}
 

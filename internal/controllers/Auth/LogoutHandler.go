@@ -1,7 +1,7 @@
 package Auth
 
 import (
-	"STDE_proj/internal/controllers/Auth/model"
+	"STDE_proj/internal/models"
 	"STDE_proj/internal/repositories"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -10,7 +10,7 @@ import (
 
 func LogoutHandler(c *gin.Context) {
 	access := c.Request.Header.Get("Authorization")
-	var refresh model.LogoutRequest
+	var refresh models.LogoutRequest
 
 	if err := c.ShouldBindJSON(&refresh); err != nil {
 		log.Printf("Некорректный JSON: %v", err)

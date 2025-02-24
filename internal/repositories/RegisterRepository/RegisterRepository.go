@@ -31,9 +31,6 @@ func Register(data models.AuthUser) error {
 		return err
 	}
 
-	log.Println(data.TypeLogin)
-	log.Println(data.Login)
-
 	switch data.TypeLogin {
 	case "email":
 		execAuthUser := "INSERT INTO auth_user (email, password) VALUES ($1, $2) RETURNING id"

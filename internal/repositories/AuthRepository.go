@@ -26,6 +26,8 @@ func FindByUsername(login string) (*models.AuthUser, error) {
 	return &user, nil
 }
 
+// В будущем навзать CheckVerifyAccount
+// Добавь возможность проверять аккаунт подтвержден или нет не только почтой, но и номером телефона
 func CheckVerifyEmail(email string) error {
 	if database.DB == nil {
 		log.Println("Ошибка: подключение к базе данных не инициализировано")

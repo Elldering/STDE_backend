@@ -1,7 +1,7 @@
 package Auth
 
 import (
-	"STDE_proj/internal/controllers/Auth/model"
+	"STDE_proj/internal/models"
 	"STDE_proj/internal/repositories"
 	"STDE_proj/internal/services"
 	"fmt"
@@ -28,7 +28,7 @@ import (
 // - Возвращает статус ошибки и сообщение в случае неудачи
 func RefreshToken(c *gin.Context) {
 
-	var refresh model.LogoutRequest
+	var refresh models.LogoutRequest
 
 	if err := c.ShouldBindJSON(&refresh); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Refresh токен не был передан"})
