@@ -19,4 +19,6 @@ type AuthUser struct {
 	UserRID        int       `json:"user_r_id"`
 	Login          string    `json:"login"`
 	TypeLogin      string    `json:"type_login"`
+	RefreshToken   string    `json:"refresh_token"`
+	UsernameClaim  string    `json:"username_claim"`
 }

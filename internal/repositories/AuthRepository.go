@@ -10,20 +10,45 @@ import (
 	"time"
 )
 
-func FindByUsername(login string) (*models.AuthUser, error) {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return nil, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
+func FindByUsername(data models.AuthUser) (*models.AuthUser, error) {
 
-	var user models.AuthUser
-	query := database.DB.QueryRow("SELECT id, email, phone_number, password FROM auth_user WHERE email = $1 OR phone_number = $2", login, login)
-	var phoneNumber *sql.NullString
-	if err := query.Scan(&user.ID, &user.Email, &phoneNumber, &user.Password); err != nil {
-		log.Printf("Ошибка при сканировании данных пользователя: %v", err)
-		return nil, errors.New("неверные учетные данные")
+	switch data.TypeLogin {
+	case "email":
+		query := database.DB.QueryRow(`
+        SELECT id, email, password 
+        FROM auth_user 
+        WHERE email = $1`, data.Login)
+		err := query.Scan(&data.ID, &data.Login, &data.Password)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// Пользователь не найден
+				log.Printf("Пользователь с логином %s не найден", data.Login)
+				return nil, fmt.Errorf("пользователь не найден")
+			}
+			// Другие ошибки (например, проблемы с подключением или сканированием)
+			log.Printf("Ошибка при сканировании данных пользователя: %v", err)
+			return nil, fmt.Errorf("ошибка при поиске пользователя: %v", err)
+		}
+		return &data, nil
+	case "phone_number":
+		query := database.DB.QueryRow(`
+        SELECT id, phone_number, password 
+        FROM auth_user 
+        WHERE phone_number = $1`, data.Login)
+		err := query.Scan(&data.ID, &data.Login, &data.Password)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// Пользователь не найден
+				log.Printf("Пользователь с логином %s не найден", data.Login)
+				return nil, fmt.Errorf("пользователь не найден")
+			}
+			// Другие ошибки (например, проблемы с подключением или сканированием)
+			log.Printf("Ошибка при сканировании данных пользователя: %v", err)
+			return nil, fmt.Errorf("ошибка при поиске пользователя: %v", err)
+		}
+		return &data, nil
 	}
-	return &user, nil
+	return &models.AuthUser{}, errors.New("некорректный логин пользователя")
 }
 
 // В будущем навзать CheckVerifyAccount

@@ -2,12 +2,8 @@ package Auth
 
 import (
 	"STDE_proj/internal/models"
-	"STDE_proj/internal/repositories"
 	"STDE_proj/internal/services"
-	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -27,66 +23,28 @@ import (
 // - Генерирует новый access токен и возвращает его в ответе
 // - Возвращает статус ошибки и сообщение в случае неудачи
 func RefreshToken(c *gin.Context) {
-
-	var refresh models.LogoutRequest
-
-	if err := c.ShouldBindJSON(&refresh); err != nil {
+	var data models.AuthUser
+	// Парсим JSON-тело запроса
+	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Refresh токен не был передан"})
 		return
 	}
 
+	// Убираем префикс "Bearer" из токена
+	if strings.HasPrefix(data.RefreshToken, "Bearer ") {
+		data.RefreshToken = strings.TrimPrefix(data.RefreshToken, "Bearer ")
+	}
+
+	// Вызываем сервис для обновления токена
 	JWTSecret := os.Getenv("JWT_SECRET")
-	//log.Printf("Полученный Refresh токен: %s", refresh) // Логирование полученного токена
-
-	// Проверка на наличие префикса Bearer
-	if strings.HasPrefix(refresh.Refresh, "Bearer ") {
-		refresh.Refresh = strings.TrimPrefix(refresh.Refresh, "Bearer ")
-	}
-
-	isInvalid, err := repositories.IsRefreshTokenInvalidated(refresh.Refresh)
+	accessToken, err := services.RefreshToken(data, JWTSecret)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка проверки токена"})
-		c.Abort()
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
-	if isInvalid {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Токен недействителен"})
-		c.Abort()
-		return
-	}
-
-	token, err := jwt.Parse(refresh.Refresh, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return []byte(JWTSecret), nil
+	// Возвращаем новый access токен
+	c.JSON(http.StatusOK, gin.H{
+		"access": accessToken,
 	})
-
-	if err != nil {
-		log.Printf("Ошибка при разборе токена: %v", err) // Логирование ошибки разбора токена
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Неверный токен"})
-		return
-	}
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		user, err := repositories.FindByUsername(claims["username"].(string))
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Пользователь не найден"})
-			return
-		}
-
-		// Генерируем только новый access токен
-		accessToken, _, err := services.GenerateTokens(user, JWTSecret)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"access": accessToken,
-		})
-	} else {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Неверный токен"})
-	}
 }
