@@ -22,7 +22,7 @@ func Routes(router *gin.Engine) {
 			register := user.Group("/register")
 			{
 				register.POST("/", RegisterController.RegisterControllerHandler)
-				register.PATCH("/verify/:id", RegisterController.VerifyControllerHandler)
+				register.POST("/verify", RegisterController.VerifyControllerHandler)
 
 			}
 

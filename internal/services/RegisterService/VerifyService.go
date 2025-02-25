@@ -1,27 +1,24 @@
 package RegisterService
 
 import (
+	"STDE_proj/internal/models"
 	"STDE_proj/internal/repositories/RegisterRepository"
-	"errors"
 )
 
-func Verify(id int, code int) error {
+func Verify(data models.VerifyCode) error {
 	// Проверяем код подтверждения
-	storedCode, err := RegisterRepository.GetVerificationCode(id, code)
+	authUserID, err := RegisterRepository.GetVerificationCode(data)
 	if err != nil {
 		return err
-	}
-	if storedCode != code {
-		return errors.New("неверный код подтверждения")
 	}
 
 	// Обновляем атрибут подтверждения в таблице auth_user
-	err = RegisterRepository.UpdateEmailVerified(id)
+	err = RegisterRepository.UpdateEmailVerified(authUserID)
 	if err != nil {
 		return err
 	}
 
-	err = RegisterRepository.DeleteVerificationCode(id)
+	err = RegisterRepository.DeleteVerificationCode(authUserID)
 	if err != nil {
 		return err
 	}

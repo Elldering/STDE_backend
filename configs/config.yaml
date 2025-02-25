@@ -17,10 +17,12 @@ cors:
     - "PATCH"
     - "PUT"
     - "DELETE"
+    - "OPTIONS"
   allow_headers:
     - "Origin"
     - "Content-Type"
     - "Accept"
+    - "Authorization"
   allow_credentials: true
   max_age: 43200 # 12 часов в секундах
 
