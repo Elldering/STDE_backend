@@ -114,5 +114,29 @@ func TestRoutes(router *gin.Engine) {
 			MenuPosition.PUT("/:id", controllers.PutMenuPositionHandler)
 			MenuPosition.DELETE("/:id", controllers.DeleteMenuPositionHandler)
 		}
+		OrderPosition := test.Group("/order-position")
+		{
+			OrderPosition.GET("/", controllers.GetOrderPositionsHandler)
+			OrderPosition.GET("/:id", controllers.GetOrderPositionByIdHandler)
+			OrderPosition.POST("/", controllers.PostOrderPositionHandler)
+			OrderPosition.PUT("/:id", controllers.PutOrderPositionHandler)
+			OrderPosition.DELETE("/:id", controllers.DeleteOrderPositionHandler)
+		}
+		DocumentAuthUser := test.Group("/document-auth-user")
+		{
+			DocumentAuthUser.GET("/", controllers.GetDocumentAuthUsersHandler)
+			DocumentAuthUser.GET("/:id", controllers.GetDocumentAuthUserByIdHandler)
+			DocumentAuthUser.POST("/", controllers.PostDocumentAuthUserHandler)
+			DocumentAuthUser.PUT("/:id", controllers.PutDocumentAuthUserHandler)
+			DocumentAuthUser.DELETE("/:id", controllers.DeleteDocumentAuthUserHandler)
+		}
+		UserDocument := test.Group("/user-document")
+		{
+			UserDocument.GET("/", controllers.GetUserDocumentsHandler)
+			UserDocument.GET("/:id", controllers.GetUserDocumentByIdHandler)
+			UserDocument.POST("/", controllers.PostUserDocumentHandler)
+			UserDocument.PUT("/:id", controllers.PutUserDocumentHandler)
+			UserDocument.DELETE("/:id", controllers.DeleteUserDocumentHandler)
+		}
 	}
 }
