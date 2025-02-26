@@ -2,7 +2,7 @@ package Auth
 
 import (
 	"STDE_proj/internal/models"
-	"STDE_proj/internal/services"
+	"STDE_proj/internal/services/AuthService"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
@@ -20,7 +20,7 @@ import (
 // - Возвращает JWT access и refresh токены в случае успешной аутентификации
 // - Возвращает статус ошибки и сообщение в случае неудачи
 func LoginHandler(ctx *gin.Context) {
-	
+
 	var data models.AuthUser
 
 	JWTSecret := os.Getenv("JWT_SECRET")
@@ -30,7 +30,7 @@ func LoginHandler(ctx *gin.Context) {
 		return
 	}
 
-	accessToken, refreshToken, err := services.Authenticate(data, JWTSecret)
+	accessToken, refreshToken, err := AuthService.Authenticate(data, JWTSecret)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return

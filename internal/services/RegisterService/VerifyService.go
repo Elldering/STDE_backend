@@ -12,7 +12,14 @@ func Verify(data models.VerifyCode) error {
 		return err
 	}
 
+	//isEmailVerify, err := RegisterRepository.CheckAccountVerify(data)
+	//if err != nil {
+	//	return err
+	//}
+
+	//if !isEmailVerify {
 	// Обновляем атрибут подтверждения в таблице auth_user
+	//}
 	err = RegisterRepository.UpdateEmailVerified(authUserID)
 	if err != nil {
 		return err

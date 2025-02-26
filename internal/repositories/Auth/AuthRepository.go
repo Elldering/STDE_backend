@@ -1,8 +1,9 @@
-package repositories
+package Auth
 
 import (
 	"STDE_proj/internal/models"
 	"STDE_proj/utils/database"
+	"STDE_proj/utils/smtp_sender"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -53,11 +54,7 @@ func FindByUsername(data models.AuthUser) (*models.AuthUser, error) {
 
 // В будущем навзать CheckVerifyAccount
 // Добавь возможность проверять аккаунт подтвержден или нет не только почтой, но и номером телефона
-func CheckVerifyEmail(email string) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return fmt.Errorf("подключение к базе данных не инициализировано")
-	}
+func CheckVerifyEmail(email string, idAuthUser int) error {
 
 	query := database.DB.QueryRow("SELECT EXISTS (SELECT 1 FROM auth_user WHERE email = $1 AND is_email_verify = true);", email)
 	var user models.AuthUser
@@ -69,6 +66,18 @@ func CheckVerifyEmail(email string) error {
 	if user.IsEmail == false {
 		return errors.New("почта не подтверждена")
 	}
+	verifyCode := smtp_sender.GenerateCode()
+	_, err := database.DB.Exec("INSERT INTO verify_code (code, auth_user_id) VALUES ($1, $2);", verifyCode, idAuthUser)
+	if err != nil {
+		log.Printf("ошибка при создании проверочного кода %v", err)
+		return errors.New("ошибка при создании проверочного кода")
+	}
+
+	err = smtp_sender.SendEmail(email, verifyCode)
+	if err != nil {
+		log.Fatalf("Ошибка при отправке письма: %v", err)
+	}
+
 	return nil
 }
 
