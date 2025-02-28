@@ -3,8 +3,6 @@ package services
 import (
 	"STDE_proj/internal/models"
 	"STDE_proj/internal/repositories"
-	"STDE_proj/internal/repositories/Auth"
-	"STDE_proj/internal/services/AuthService"
 	"STDE_proj/utils/validation"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
@@ -46,13 +44,13 @@ func RefreshToken(data models.AuthUser, JWTSecret string) (string, error) {
 	log.Print(data.Login)
 	err = validation.CheckEmailOrPhoneNumber(&data)
 
-	user, err := Auth.FindByUsername(data)
+	user, err := repositories.FindByUsername(data)
 	if err != nil {
 		return "", fmt.Errorf("пользователь не найден")
 	}
 
-	// Генерируем новый access токен
-	accessToken, _, err := AuthService.GenerateTokens(user, JWTSecret)
+	//// Генерируем новый access токен
+	accessToken, _, err := GenerateTokens(user, JWTSecret)
 	if err != nil {
 		return "", fmt.Errorf("ошибка генерации токена: %v", err)
 	}

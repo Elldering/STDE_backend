@@ -1,4 +1,4 @@
-package RegisterRepository
+package repositories
 
 import (
 	"STDE_proj/internal/models"
@@ -7,21 +7,6 @@ import (
 	"errors"
 	"log"
 )
-
-func CheckAccountVerify(data models.VerifyCode) (bool, error) {
-
-	var isEmailVerified bool = false
-	query := "SELECT is_email_verify FROM auth_user WHERE code = $1"
-	err := database.DB.QueryRow(query, data.Code).Scan(&isEmailVerified)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return false, errors.New("почта не подтверждена (аккаунт не зарегистрировал)")
-		}
-		log.Printf("Ошибка при получении подтверждения почты: %v", err)
-		return false, errors.New("ошибка при получении подтверждение почты")
-	}
-	return isEmailVerified, nil
-}
 
 func GetVerificationCode(data models.VerifyCode) (int, error) {
 

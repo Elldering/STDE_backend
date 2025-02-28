@@ -10,6 +10,7 @@ import (
 )
 
 func Routes(router *gin.Engine) {
+
 	JWTSecret := os.Getenv("JWT_SECRET")
 
 	public := router.Group("/api/public")
@@ -22,17 +23,25 @@ func Routes(router *gin.Engine) {
 			register := user.Group("/register")
 			{
 				register.POST("/", RegisterController.RegisterControllerHandler)
-				register.POST("/verify", RegisterController.VerifyControllerHandler)
 
 			}
+
+			user.POST("/verify/:type", controllers.VerifyControllerHandler)
 
 		}
 
 		auth := public.Group("/auth")
 		{
-			auth.POST("/login", Auth.LoginHandler)
-			auth.POST("/refresh", Auth.RefreshToken)
+			auth.POST("/authentication", controllers.AuthenticationHandler)
+			//auth.POST("/login", Auth.LoginHandler)
 		}
+
+		token := public.Group("/token")
+		{
+			token.POST("/", controllers.GenerateAccessRefreshToken)
+			auth.POST("/refresh", controllers.RefreshToken)
+		}
+
 	}
 
 	protected := router.Group("/api/private")

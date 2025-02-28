@@ -1,10 +1,8 @@
-package AuthService
+package services
 
 import (
 	"STDE_proj/internal/models"
-	"STDE_proj/internal/repositories/Auth"
-	"STDE_proj/utils/hash"
-	"STDE_proj/utils/validation"
+	"STDE_proj/internal/repositories"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"log"
@@ -14,7 +12,7 @@ import (
 // GenerateTokens создает access и refresh токены для пользователя
 func GenerateTokens(user *models.AuthUser, JWTSecret string) (string, string, error) {
 	log.Printf("В GenerateTokens: user.Login = %s", user.Login)
-	err := Auth.UpdateLastLogin(user)
+	err := repositories.UpdateLastLogin(user)
 	if err != nil {
 		return "", "", fmt.Errorf(" ошибка попытке обновить время входа: %v", err)
 	}
@@ -42,37 +40,4 @@ func GenerateTokens(user *models.AuthUser, JWTSecret string) (string, string, er
 	}
 
 	return accessTokenString, refreshTokenString, nil
-}
-
-// Authenticate аутентифицирует пользователя на основе логина и пароля
-func Authenticate(data models.AuthUser, JWTSecret string) (string, string, error) {
-
-	err := validation.CheckEmailOrPhoneNumber(&data)
-	if err != nil {
-		return "", "", err
-	}
-
-	user, err := Auth.FindByUsername(data)
-	log.Println(user.ID, user.Login)
-	switch data.TypeLogin {
-	case "email":
-		err = Auth.CheckVerifyEmail(user.Login, user.ID)
-
-		if err != nil {
-			return "", "", err
-		}
-	case "phone_number":
-		log.Println(data.Login)
-	}
-
-	if !hash.CheckPasswordHash(data.Password, user.Password) {
-		return "", "", fmt.Errorf("неверные учетные данные")
-	}
-
-	accessToken, refreshToken, err := GenerateTokens(user, JWTSecret)
-	if err != nil {
-		return "", "", err
-	}
-
-	return accessToken, refreshToken, nil
 }

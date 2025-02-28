@@ -1,5 +1,6 @@
 package models
 
 type VerifyCode struct {
-	Code int `json:"code"`
+	Code int    `json:"code"`
+	Type string `json:"type"`
 }

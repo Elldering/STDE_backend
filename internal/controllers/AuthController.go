@@ -1,11 +1,10 @@
-package Auth
+package controllers
 
 import (
 	"STDE_proj/internal/models"
-	"STDE_proj/internal/services/AuthService"
+	"STDE_proj/internal/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"os"
 )
 
 // LoginHandler обрабатывает запросы на авторизацию пользователя
@@ -19,22 +18,21 @@ import (
 // - Аутентифицирует пользователя с помощью `services.Authenticate`
 // - Возвращает JWT access и refresh токены в случае успешной аутентификации
 // - Возвращает статус ошибки и сообщение в случае неудачи
-func LoginHandler(ctx *gin.Context) {
+
+func AuthenticationHandler(ctx *gin.Context) {
 
 	var data models.AuthUser
 
-	JWTSecret := os.Getenv("JWT_SECRET")
-
+	//JWTSecret := os.Getenv("JWT_SECRET")
 	if err := ctx.ShouldBindJSON(&data); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	accessToken, refreshToken, err := AuthService.Authenticate(data, JWTSecret)
+	err := services.Authentication(data)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"access": accessToken, "refresh": refreshToken})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Пользователь присутствует в системе"})
 }

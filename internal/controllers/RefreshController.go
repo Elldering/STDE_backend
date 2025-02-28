@@ -1,4 +1,4 @@
-package Auth
+package controllers
 
 import (
 	"STDE_proj/internal/models"
