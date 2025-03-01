@@ -10,7 +10,7 @@ import (
 )
 
 // Authenticate аутентифицирует пользователя на основе логина и пароля
-func Authentication(data models.AuthUser) error {
+func Authentication(data models.AuthUserRequest) error {
 
 	err := validation.CheckEmailOrPhoneNumber(&data)
 	if err != nil {

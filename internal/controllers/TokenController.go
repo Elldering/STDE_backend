@@ -9,7 +9,7 @@ import (
 )
 
 func GenerateAccessRefreshToken(c *gin.Context) {
-	var data models.AuthUser
+	var data models.AuthUserRequest
 
 	JWTSecret := os.Getenv("JWT_SECRET")
 

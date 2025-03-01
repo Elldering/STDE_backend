@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-func Register(data models.AuthUser) error {
+func Register(data models.AuthUserRequest) error {
 	err := validation.CheckEmailOrPhoneNumber(&data)
 	if err != nil {
 		return err

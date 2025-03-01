@@ -10,11 +10,9 @@ import (
 	"log"
 )
 
-func Register(data models.AuthUser) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return fmt.Errorf("подключение к базе данных не инициализировано")
-	}
+// Register TODO Переделать функции поиска по номеру и почте. Разделить на две разные функции
+func Register(data models.AuthUserRequest) error {
+
 	var phoneNumber sql.NullString
 
 	query := database.DB.QueryRow("SELECT id, email, phone_number FROM auth_user WHERE email = $1 OR phone_number = $2", data.Login, data.Login)

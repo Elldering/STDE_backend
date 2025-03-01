@@ -8,9 +8,9 @@ import (
 	"net/http"
 )
 
-func RegisterControllerHandler(c *gin.Context) {
+func RegisterHandler(c *gin.Context) {
 
-	var data models.AuthUser
+	var data models.AuthUserRequest
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		log.Printf("Некорректный JSON: %v", err)

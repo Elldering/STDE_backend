@@ -11,7 +11,8 @@ import (
 	"time"
 )
 
-func UpdateLastLogin(data *models.AuthUser) error {
+// TODO Убрать валидацию из слоя Репозиторий. Переместить валидацию в сервисный слой
+func UpdateLastLogin(data *models.AuthUserRequest) error {
 	var currentTime = time.Now()
 	log.Println(data.ID)
 	query := database.DB.QueryRow("SELECT id FROM auth_user WHERE email = $1", data.Login)
@@ -35,7 +36,8 @@ func UpdateLastLogin(data *models.AuthUser) error {
 	return nil
 }
 
-func FindByUsername(data models.AuthUser) (*models.AuthUser, error) {
+// FindByUsername TODO разделить на два разных метода. Метод поиска по email и метод поиска по номеру телефона
+func FindByUsername(data models.AuthUserRequest) (*models.AuthUserRequest, error) {
 	switch data.TypeLogin {
 	case "email":
 		query := database.DB.QueryRow(`
@@ -68,7 +70,7 @@ func FindByUsername(data models.AuthUser) (*models.AuthUser, error) {
 		}
 		return &data, nil
 	}
-	return &models.AuthUser{}, errors.New("некорректный логин пользователя")
+	return &models.AuthUserRequest{}, errors.New("некорректный логин пользователя")
 }
 
 func VerifyEmail(email string, idAuthUser int) error {

@@ -7,14 +7,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"strings"
 )
 
 func GetAllPermissions() ([]models.Permission, error) {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return nil, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	rows, err := database.DB.Query("SELECT id, codename, description FROM permission")
 	if err != nil {
@@ -35,10 +30,6 @@ func GetAllPermissions() ([]models.Permission, error) {
 }
 
 func GetPermissionById(id int) (models.Permission, error) {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return models.Permission{}, errors.New("подключение к базе данных не инициализировано")
-	}
 
 	row := database.DB.QueryRow("SELECT id, codename, description FROM permission WHERE id=$1", id)
 
@@ -56,15 +47,6 @@ func GetPermissionById(id int) (models.Permission, error) {
 }
 
 func PostPermission(agp models.Permission) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
-
-	if strings.TrimSpace(agp.Codename) == "" || strings.TrimSpace(agp.Description) == "" {
-		log.Println("Ошибка: пустые поля codename или description")
-		return errors.New("поля codename и description не могут быть пустыми")
-	}
 
 	query := "INSERT INTO permission (codename, description) VALUES ($1, $2)"
 	result, err := database.DB.Exec(query, agp.Codename, agp.Description)
@@ -80,17 +62,13 @@ func PostPermission(agp models.Permission) error {
 	}
 	if rowsAffected == 0 {
 		log.Println("Ошибка: Permission не была добавлена")
-		return errors.New("Permission не была добавлена")
+		return errors.New("permission не была добавлена")
 	}
 
 	return nil
 }
 
 func DeletePermission(id int) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
 
 	result, err := database.DB.Exec("DELETE FROM permission WHERE id=$1", id)
 	if err != nil {
@@ -105,29 +83,19 @@ func DeletePermission(id int) error {
 	}
 	if rowsAffected == 0 {
 		log.Printf("Ошибка: Permission с id %d не найдена", id)
-		return fmt.Errorf("Permission с id %d не найдена", id)
+		return fmt.Errorf("permission с id %d не найдена", id)
 	}
 
 	return nil
 }
 
 func PutPermission(id int, agp models.Permission) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
-
-	if strings.TrimSpace(agp.Codename) == "" || strings.TrimSpace(agp.Description) == "" {
-		log.Println("Ошибка: пустые поля codename или description")
-		return errors.New("поля codename и description не могут быть пустыми")
-	}
-
 	row := database.DB.QueryRow("SELECT id FROM permission WHERE id=$1", id)
 	var existingID int
 	if err := row.Scan(&existingID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			log.Printf("Ошибка: Permission с id %d не найдена", id)
-			return fmt.Errorf("Permission с id %d не найдена", id)
+			return fmt.Errorf("permission с id %d не найдена", id)
 		}
 		log.Printf("Ошибка при проверке существования Permission с id %d: %v", id, err)
 		return fmt.Errorf("ошибка при проверке существования Permission: %v", err)
@@ -146,7 +114,7 @@ func PutPermission(id int, agp models.Permission) error {
 	}
 	if rowsAffected == 0 {
 		log.Printf("Ошибка: Permission с id %d не найдена", id)
-		return fmt.Errorf("Permission с id %d не найдена", id)
+		return fmt.Errorf("permission с id %d не найдена", id)
 	}
 
 	return nil

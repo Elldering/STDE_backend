@@ -4,13 +4,20 @@ import (
 	"STDE_proj/internal/models"
 	"STDE_proj/internal/repositories"
 	"STDE_proj/utils/validation"
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"log"
 )
 
 // RefreshToken обновляет access токен на основе refresh токена
-func RefreshToken(data models.AuthUser, JWTSecret string) (string, error) {
+func RefreshToken(data models.AuthUserRequest, JWTSecret string) (string, error) {
+
+	err := validation.ValidateEmptyFields(data.RefreshToken, data.Login, JWTSecret)
+	if err != nil {
+		return "", errors.New("токен, логин и jwt секрет не могут быть пустыми")
+	}
+
 	// Проверяем, не отозван ли refresh токен
 	isInvalidRefresh, err := repositories.IsRefreshTokenInvalidated(data.RefreshToken)
 	if err != nil {

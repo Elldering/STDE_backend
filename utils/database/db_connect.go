@@ -24,12 +24,12 @@ func Connect() error {
 	// Открываем соединение с базой данных
 	DB, err = sql.Open("postgres", con)
 	if err != nil {
-		return fmt.Errorf("Ошибка подключения к базе данных: %w", err)
+		return fmt.Errorf("ошибка подключения к базе данных: %w", err)
 	}
 
 	// Проверяем соединение с базой данных
 	if err := DB.Ping(); err != nil {
-		return fmt.Errorf("Ошибка при проверке подключения к базе данных: %w", err)
+		return fmt.Errorf("ошибка при проверке подключения к базе данных: %w", err)
 	}
 
 	log.Println("Подключение к базе данных успешно!")

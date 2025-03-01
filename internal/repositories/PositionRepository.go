@@ -11,10 +11,6 @@ import (
 )
 
 func GetAllPositions() ([]models.Position, error) {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return nil, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	rows, err := database.DB.Query("SELECT id, name, description, price, available, image FROM position")
 	if err != nil {
@@ -53,10 +49,6 @@ func GetPositionById(id int) (models.Position, error) {
 
 // Создание новой позиции
 func PostPosition(agp models.Position) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
 
 	if strings.TrimSpace(agp.Description) == "" || strings.TrimSpace(agp.Name) == "" || strings.TrimSpace(agp.Image) == "" {
 		log.Println("Ошибка: пустые поля codename или description")
@@ -85,10 +77,7 @@ func PostPosition(agp models.Position) error {
 }
 
 func PutPosition(id int, position models.Position) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
+
 	query := "UPDATE position SET name=$1, description=$2, price=$3, available=$4, image=$5 WHERE id=$6"
 	result, err := database.DB.Exec(query, position.Name, position.Description, position.Price, position.Available, position.Image, id)
 	if err != nil {

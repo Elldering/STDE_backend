@@ -32,10 +32,6 @@ import (
 //}
 
 func PostAuthUser(data models.AuthUser) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
 
 	query := "INSERT INTO auth_user (password, email, phone_number) VALUES ($1, $2, $3)"
 	result, err := database.DB.Exec(query, data.Password, data.Email, data.PhoneNumber)
@@ -58,10 +54,6 @@ func PostAuthUser(data models.AuthUser) error {
 }
 
 func DeleteAuthUser(id int) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
 
 	result, err := database.DB.Exec("DELETE FROM auth_user WHERE id=$1", id)
 	if err != nil {

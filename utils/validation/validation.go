@@ -38,7 +38,7 @@ func ValidatePassword(password string) bool {
 
 // CheckEmailOrPhoneNumber проверяет, является ли входная строка email или номером телефона.
 // Возвращает "email", "phone" или ошибку, если строка не соответствует ни одному из форматов.
-func CheckEmailOrPhoneNumber(data *models.AuthUser) error {
+func CheckEmailOrPhoneNumber(data *models.AuthUserRequest) error {
 	if ValidateEmail(data.Login) {
 		data.TypeLogin = "email"
 		return nil
@@ -51,12 +51,13 @@ func CheckEmailOrPhoneNumber(data *models.AuthUser) error {
 }
 
 // ValidateEmptyFields проверяет, что ни одно из переданных полей не пустое.
-// Возвращает true, если все поля заполнены, или ошибку, если хотя бы одно поле пустое.
-func ValidateEmptyFields(fields ...string) (bool, error) {
+// Возвращает ошибку, если валидация не прошла успешно
+func ValidateEmptyFields(fields ...interface{}) error {
 	for _, field := range fields {
-		if field == "" {
-			return false, fmt.Errorf("поле не может быть пустым")
+		if field == nil || field == "" {
+			return fmt.Errorf("поле не может быть пустым или нулевым")
 		}
+
 	}
-	return true, nil
+	return nil
 }

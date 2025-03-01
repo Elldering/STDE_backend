@@ -8,14 +8,9 @@ import (
 	"fmt"
 	_ "github.com/gin-gonic/gin"
 	"log"
-	"strings"
 )
 
 func GetAllUserProfile() ([]models.UserProfile, error) {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return nil, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	rows, err := database.DB.Query("SELECT id, first_name, last_name, middle_name, rating, profile_image FROM user_profile")
 	if err != nil {
@@ -36,14 +31,11 @@ func GetAllUserProfile() ([]models.UserProfile, error) {
 }
 
 func GetUserProfileById(id int) (models.UserProfile, error) {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return models.UserProfile{}, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
+
 	row := database.DB.QueryRow("SELECT id, first_name, last_name, middle_name, rating, profile_image FROM user_profile WHERE id=$1", id)
 	var userProfile models.UserProfile
 	if err := row.Scan(&userProfile.ID, &userProfile.FirstName, &userProfile.LastName, &userProfile.MiddleName, &userProfile.Rating, &userProfile.ProfileImage); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return models.UserProfile{}, fmt.Errorf("группа профиля пользователя с id %d не найдена", id)
 		}
 		return models.UserProfile{}, err
@@ -52,15 +44,6 @@ func GetUserProfileById(id int) (models.UserProfile, error) {
 }
 
 func PostUserProfile(agp models.UserProfile) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return fmt.Errorf("подключение к базе данных не инициализировано")
-	}
-
-	if strings.TrimSpace(agp.FirstName) == "" || strings.TrimSpace(agp.LastName) == "" {
-		log.Println("Ошибка: пустые поля first_name или last_name")
-		return errors.New("поля first_name или last_name не могут быть пустыми")
-	}
 
 	query := "INSERT INTO user_profile (first_name, last_name, middle_name, rating, profile_image) VALUES ($1, $2, $3, $4, $5)"
 	result, err := database.DB.Exec(query, agp.FirstName, agp.LastName, agp.MiddleName, agp.Rating, agp.ProfileImage)
@@ -82,15 +65,6 @@ func PostUserProfile(agp models.UserProfile) error {
 }
 
 func PutUserProfile(id int, agp models.UserProfile) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return fmt.Errorf("подключение к базе данных не инициализировано")
-	}
-
-	if strings.TrimSpace(agp.FirstName) == "" || strings.TrimSpace(agp.LastName) == "" {
-		log.Println("Ошибка: пустые поля FirstName или LastName")
-		return errors.New("поля FirstName или LastName не могут быть пустыми")
-	}
 
 	row := database.DB.QueryRow("SELECT id, first_name, last_name, middle_name, rating, profile_image FROM user_profile WHERE id=$1", id)
 	var userGroup models.UserProfile
@@ -121,10 +95,6 @@ func PutUserProfile(id int, agp models.UserProfile) error {
 }
 
 func DeleteUserProfile(id int) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	result, err := database.DB.Exec("DELETE FROM user_profile WHERE id=$1", id)
 	if err != nil {

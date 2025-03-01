@@ -10,10 +10,7 @@ import (
 )
 
 func GetAuthUserGroupsAll() ([]models.AuthUserGroups, error) {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return nil, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
+
 	query, err := database.DB.Query("SELECT id, group_id, user_id FROM auth_user_groups")
 	if err != nil {
 		return nil, err
@@ -32,10 +29,6 @@ func GetAuthUserGroupsAll() ([]models.AuthUserGroups, error) {
 }
 
 func GetAuthUserGroupsById(id int) (models.AuthUserGroups, error) {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return models.AuthUserGroups{}, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	row := database.DB.QueryRow("SELECT id, group_id, user_id FROM auth_user_groups WHERE id = $1", id)
 	var data models.AuthUserGroups
@@ -51,10 +44,6 @@ func GetAuthUserGroupsById(id int) (models.AuthUserGroups, error) {
 }
 
 func PostAuthUserGroups(data models.AuthUserGroups) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	query := "INSERT INTO auth_user_groups (group_id, user_id) VALUES ($1, $2)"
 	_, err := database.DB.Exec(query, data.GroupID, data.UserID)
@@ -62,10 +51,6 @@ func PostAuthUserGroups(data models.AuthUserGroups) error {
 }
 
 func PutAuthUserGroups(id int, data models.AuthUserGroups) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
 
 	if data.GroupID == 0 || data.UserID == 0 {
 		log.Println("Ошибка: пустые поля group_id или user_id")
@@ -103,10 +88,6 @@ func PutAuthUserGroups(id int, data models.AuthUserGroups) error {
 }
 
 func DeleteAuthUserGroups(id int) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	// Удаление группы пользователей
 	exec, err := database.DB.Exec("DELETE FROM auth_user_groups WHERE id=$1", id)

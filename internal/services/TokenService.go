@@ -3,16 +3,21 @@ package services
 import (
 	"STDE_proj/internal/models"
 	"STDE_proj/internal/repositories"
+	"STDE_proj/utils/validation"
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"log"
 	"time"
 )
 
 // GenerateTokens создает access и refresh токены для пользователя
-func GenerateTokens(user *models.AuthUser, JWTSecret string) (string, string, error) {
-	log.Printf("В GenerateTokens: user.Login = %s", user.Login)
-	err := repositories.UpdateLastLogin(user)
+func GenerateTokens(user *models.AuthUserRequest, JWTSecret string) (string, string, error) {
+	err := validation.ValidateEmptyFields(user.Login)
+	if err != nil {
+		return "", "", errors.New("логин не может быть пустым")
+	}
+	//log.Printf("В GenerateTokens: user.Login = %s", user.Login)
+	err = repositories.UpdateLastLogin(user)
 	if err != nil {
 		return "", "", fmt.Errorf(" ошибка попытке обновить время входа: %v", err)
 	}

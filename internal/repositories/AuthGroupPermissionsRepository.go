@@ -10,10 +10,6 @@ import (
 )
 
 func GetAuthGroupPermissions() ([]models.AuthGroupPermissions, error) {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return nil, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	rows, err := database.DB.Query("SELECT id, group_id, permission_id FROM auth_group_permissions")
 	if err != nil {
@@ -34,10 +30,7 @@ func GetAuthGroupPermissions() ([]models.AuthGroupPermissions, error) {
 }
 
 func GetAuthGroupPermissionsId(id int) (models.AuthGroupPermissions, error) {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return models.AuthGroupPermissions{}, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
+
 	row := database.DB.QueryRow("SELECT id, group_id, permission_id FROM auth_group_permissions WHERE id=$1", id)
 	var data models.AuthGroupPermissions
 	if err := row.Scan(&data.ID, &data.GroupID, &data.PermissionID); err != nil {
@@ -52,10 +45,7 @@ func GetAuthGroupPermissionsId(id int) (models.AuthGroupPermissions, error) {
 }
 
 func PutAuthGroupPermissions(id int, data models.AuthGroupPermissions) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
+
 	if data.GroupID == 0 || data.PermissionID == 0 {
 		log.Println("Ошибка: пустые поля group_id или permission_id")
 		return errors.New("поля group_id и permission_id не могут быть пустыми")
@@ -92,10 +82,6 @@ func PutAuthGroupPermissions(id int, data models.AuthGroupPermissions) error {
 }
 
 func DeleteAuthGroupPermissions(id int) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	// Удаление группы пользователей
 	exec, err := database.DB.Exec("DELETE FROM auth_group_permissions WHERE id=$1", id)
@@ -119,10 +105,6 @@ func DeleteAuthGroupPermissions(id int) error {
 
 // Функция для создания связи группы и прав доступа
 func PostAuthGroupPermission(agp models.AuthGroupPermissions) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	query := "INSERT INTO auth_group_permissions (group_id, permission_id) VALUES ($1, $2)"
 	_, err := database.DB.Exec(query, agp.GroupID, agp.PermissionID)

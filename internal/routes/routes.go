@@ -22,7 +22,7 @@ func Routes(router *gin.Engine) {
 			//user.POST("/add", controllers.PostAuthUserHandler)
 			register := user.Group("/register")
 			{
-				register.POST("/", RegisterController.RegisterControllerHandler)
+				register.POST("/", RegisterController.RegisterHandler)
 
 			}
 
@@ -30,11 +30,7 @@ func Routes(router *gin.Engine) {
 
 		}
 
-		auth := public.Group("/auth")
-		{
-			auth.POST("/authentication", controllers.AuthenticationHandler)
-			//auth.POST("/login", Auth.LoginHandler)
-		}
+		auth := public.POST("/auth", controllers.AuthenticationHandler)
 
 		token := public.Group("/token")
 		{

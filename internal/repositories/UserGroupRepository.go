@@ -11,10 +11,6 @@ import (
 )
 
 func GetAllUserGroups() ([]models.UserGroup, error) {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return nil, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	rows, err := database.DB.Query("SELECT id, name FROM user_group")
 	if err != nil {
@@ -35,10 +31,6 @@ func GetAllUserGroups() ([]models.UserGroup, error) {
 }
 
 func GetUserGroupById(id int) (models.UserGroup, error) {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return models.UserGroup{}, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	row := database.DB.QueryRow("SELECT id, name FROM user_group WHERE id=$1", id)
 
@@ -54,21 +46,12 @@ func GetUserGroupById(id int) (models.UserGroup, error) {
 }
 
 func PostUserGroup(agp models.UserGroup) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return fmt.Errorf("подключение к базе данных не инициализировано")
-	}
-
-	query := "INSERT INTO user_group ( name) VALUES ($1)"
+	query := "INSERT INTO user_group (name) VALUES ($1)"
 	_, err := database.DB.Exec(query, agp.Name)
 	return err
 }
 
 func DeleteUserGroup(id int) error {
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	// Удаление группы пользователей
 	result, err := database.DB.Exec("DELETE FROM user_group WHERE id=$1", id)
@@ -91,11 +74,6 @@ func DeleteUserGroup(id int) error {
 }
 
 func PutUserGroup(id int, agp models.UserGroup) error {
-	// Проверка инициализации подключения к базе данных
-	if database.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	// Проверка существования группы пользователей
 	row := database.DB.QueryRow("SELECT id, name FROM user_group WHERE id=$1", id)

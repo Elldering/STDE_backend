@@ -21,9 +21,8 @@ import (
 
 func AuthenticationHandler(ctx *gin.Context) {
 
-	var data models.AuthUser
+	var data models.AuthUserRequest
 
-	//JWTSecret := os.Getenv("JWT_SECRET")
 	if err := ctx.ShouldBindJSON(&data); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

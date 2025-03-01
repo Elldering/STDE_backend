@@ -23,7 +23,7 @@ import (
 // - Генерирует новый access токен и возвращает его в ответе
 // - Возвращает статус ошибки и сообщение в случае неудачи
 func RefreshToken(c *gin.Context) {
-	var data models.AuthUser
+	var data models.AuthUserRequest
 	// Парсим JSON-тело запроса
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Refresh токен не был передан"})
