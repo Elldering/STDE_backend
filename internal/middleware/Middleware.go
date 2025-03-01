@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"STDE_proj/internal/repositories"
+	"STDE_proj/utils/validation"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -30,13 +31,14 @@ func AuthMiddleware(JWTSecret string) gin.HandlerFunc {
 
 		access := c.GetHeader("Authorization")
 
-		if access == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Access токена нет в заголовке"})
+		err := validation.ValidateEmptyFields(access, JWTSecret)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Отсутствует access токен в заголовке. Либо ошибка чтения jwt secret"})
 			c.Abort()
 			return
 		}
 
-		access = access[len("Bearer "):] // Удаляем префикс "Bearer "
+		access = access[len("Bearer "):] // Удаляем префикс "Bearer"
 		// Проверяем, находится ли токен в черном списке
 		isInvalid, err := repositories.IsAccessTokenInvalidated(access)
 		if err != nil {
