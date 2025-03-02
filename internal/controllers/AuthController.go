@@ -33,5 +33,5 @@ func AuthenticationHandler(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Пользователь присутствует в системе"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Аутентификация успешна. Код доступа отправлен"})
 }

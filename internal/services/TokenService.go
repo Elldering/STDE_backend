@@ -10,22 +10,28 @@ import (
 	"time"
 )
 
-// GenerateTokens создает access и refresh токены для пользователя
+const (
+	AccessTokenExpiry  = time.Minute * 15
+	RefreshTokenExpiry = time.Hour * 24 * 5
+)
+
 func GenerateTokens(user *models.AuthUserRequest, JWTSecret string) (string, string, error) {
-	err := validation.ValidateEmptyFields(user.Login)
-	if err != nil {
+	if JWTSecret == "" {
+		return "", "", errors.New("JWT_SECRET не настроен")
+	}
+
+	if err := validation.ValidateEmptyFields(user.Login); err != nil {
 		return "", "", errors.New("логин не может быть пустым")
 	}
-	//log.Printf("В GenerateTokens: user.Login = %s", user.Login)
-	err = repositories.UpdateLastLogin(user)
-	if err != nil {
-		return "", "", fmt.Errorf(" ошибка попытке обновить время входа: %v", err)
-	}
-	// Генерация access токена
 
+	if err := repositories.UpdateLastLogin(user); err != nil {
+		return "", "", fmt.Errorf("ошибка при попытке обновить время входа: %v", err)
+	}
+
+	// Генерация access токена
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": user.Login,
-		"exp":      time.Now().Add(time.Minute * 15).Unix(), // Access токен действует 15 минут
+		"exp":      time.Now().Add(AccessTokenExpiry).Unix(),
 	})
 
 	accessTokenString, err := accessToken.SignedString([]byte(JWTSecret))
@@ -36,7 +42,7 @@ func GenerateTokens(user *models.AuthUserRequest, JWTSecret string) (string, str
 	// Генерация refresh токена
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": user.Login,
-		"exp":      time.Now().Add(time.Hour * 24 * 5).Unix(), // Refresh токен действует 7 дней
+		"exp":      time.Now().Add(RefreshTokenExpiry).Unix(),
 	})
 
 	refreshTokenString, err := refreshToken.SignedString([]byte(JWTSecret))

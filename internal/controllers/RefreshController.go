@@ -37,14 +37,15 @@ func RefreshToken(c *gin.Context) {
 
 	// Вызываем сервис для обновления токена
 	JWTSecret := os.Getenv("JWT_SECRET")
+
 	accessToken, err := services.RefreshToken(data, JWTSecret)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-
+	c.SetCookie("access_token", accessToken, int(AccessTokenExpiry.Seconds()), "/", "", false, true)
 	// Возвращаем новый access токен
 	c.JSON(http.StatusOK, gin.H{
-		"access": accessToken,
+		"message": "Access token успешно обновлен",
 	})
 }

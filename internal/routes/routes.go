@@ -6,12 +6,11 @@ import (
 	"STDE_proj/internal/controllers/RegisterController"
 	"STDE_proj/internal/middleware"
 	"github.com/gin-gonic/gin"
-	"os"
 )
 
 func Routes(router *gin.Engine) {
 
-	JWTSecret := os.Getenv("JWT_SECRET")
+	//JWTSecret := os.Getenv("JWT_SECRET")
 
 	public := router.Group("/api/public")
 	{
@@ -41,7 +40,7 @@ func Routes(router *gin.Engine) {
 	}
 
 	protected := router.Group("/api/private")
-	protected.Use(middleware.AuthMiddleware(JWTSecret))
+	protected.Use(middleware.AuthMiddleware())
 	{
 		user := protected.Group("/user")
 		{
