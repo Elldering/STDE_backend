@@ -47,6 +47,7 @@ type CORSConfig struct {
 	AllowOrigins     []string `mapstructure:"allow_origins"`
 	AllowMethods     []string `mapstructure:"allow_methods"`
 	AllowHeaders     []string `mapstructure:"allow_headers"`
+	ExposeHeaders    []string `mapstructure:"expose_headers"`
 	AllowCredentials bool     `mapstructure:"allow_credentials"`
 	MaxAge           int      `mapstructure:"max_age"`
 }
@@ -95,7 +96,7 @@ func LoadConfig(envFilePath string) error {
 	// Обработка выбора между test и prod .env
 	switch envFilePath {
 	case "env":
-		envPathLoad = ".env"
+		envPathLoad = "../.env"
 	case "env.test":
 		envPathLoad = "../../.env.test"
 	default:
@@ -144,6 +145,7 @@ func CorsConfig() gin.HandlerFunc {
 		AllowOrigins:     AppConfig.CORS.AllowOrigins,
 		AllowMethods:     AppConfig.CORS.AllowMethods,
 		AllowHeaders:     AppConfig.CORS.AllowHeaders,
+		ExposeHeaders:    AppConfig.CORS.ExposeHeaders,
 		AllowCredentials: AppConfig.CORS.AllowCredentials,
 		MaxAge:           time.Duration(AppConfig.CORS.MaxAge) * time.Second,
 	}

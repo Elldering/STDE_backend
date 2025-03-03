@@ -23,6 +23,8 @@ cors:
     - "Content-Type"
     - "Accept"
     - "Authorization"
+  expose_headers:
+    "X-Is-Authenticated"
   allow_credentials: true
   max_age: 43200 # 12 часов в секундах
 

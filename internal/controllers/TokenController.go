@@ -19,7 +19,8 @@ func GenerateAccessRefreshToken(c *gin.Context) {
 
 	JWTSecret := os.Getenv("JWT_SECRET")
 	if JWTSecret == "" {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "JWT_SECRET не настроен"})
+		c.Header("X-Is-Authenticated", "false")
+		c.Status(http.StatusUnauthorized)
 		return
 	}
 
@@ -30,7 +31,8 @@ func GenerateAccessRefreshToken(c *gin.Context) {
 
 	accessToken, refreshToken, err := services.GenerateTokens(&data, JWTSecret)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Header("X-Is-Authenticated", "false")
+		c.Status(http.StatusUnauthorized)
 		return
 	}
 
@@ -41,7 +43,6 @@ func GenerateAccessRefreshToken(c *gin.Context) {
 	c.SetCookie("refresh_token", refreshToken, int(RefreshTokenExpiry.Seconds()), "/", "", false, true)
 
 	// Возвращаем успешный ответ
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Токены успешно установлены в cookies",
-	})
+	c.Header("X-Is-Authenticated", "true")
+	c.Status(http.StatusOK)
 }
