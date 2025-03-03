@@ -95,7 +95,7 @@ func LoadConfig(envFilePath string) error {
 	// Обработка выбора между test и prod .env
 	switch envFilePath {
 	case "env":
-		envPathLoad = ".env"
+		envPathLoad = "../.env"
 	case "env.test":
 		envPathLoad = "../../.env.test"
 	default:

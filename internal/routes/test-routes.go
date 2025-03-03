@@ -25,7 +25,7 @@ func TestRoutes(router *gin.Engine) {
 
 			// GET — получение подписанного URL с поддержкой пути *key (можно писать /папка/../папка/файл.расширение)
 			s3Group.GET("/files/url/*key", controllers.GetFileURLHandler)
-			
+
 			// Скачивание файла с поддержкой пути
 			s3Group.GET("/download/*key", controllers.DownloadFileHandler)
 
@@ -135,6 +135,10 @@ func TestRoutes(router *gin.Engine) {
 			UserDocument.POST("/", controllers.PostUserDocumentHandler)
 			UserDocument.PUT("/:id", controllers.PutUserDocumentHandler)
 			UserDocument.DELETE("/:id", controllers.DeleteUserDocumentHandler)
+		}
+		Metrics := test.Group("/metrics")
+		{
+			Metrics.GET("/", controllers.UpdateMetrics)
 		}
 	}
 }

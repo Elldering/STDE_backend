@@ -10,6 +10,14 @@ func NewService(repo *repositories.Repository) *Service {
 	return &Service{Repo: repo}
 }
 
-func (s *Service) GetUserCount() (int, error) {
-	return s.Repo.GetUserCount()
+func GetUserCount() (int, error) {
+	return repositories.GetUserCount()
+}
+
+func GetActiveProjectsCount() (int, error) {
+	return repositories.GetActiveProjectsCount()
+}
+
+func GetAverageTaskTime() (float64, error) {
+	return repositories.GetAverageTaskTime()
 }
