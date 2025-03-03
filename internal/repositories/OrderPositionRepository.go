@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"STDE_proj/internal/models"
-	"STDE_proj/utils/db"
+	"STDE_proj/utils/database"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -10,12 +10,7 @@ import (
 )
 
 func GetOrderPositions() ([]models.OrderPosition, error) {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return nil, errors.New("подключение к базе данных не инициализировано")
-	}
-
-	rows, err := db.DB.Query("SELECT id, order_id, position_id FROM order_position")
+	rows, err := database.DB.Query("SELECT id, order_id, position_id FROM order_position")
 	if err != nil {
 		return nil, fmt.Errorf("ошибка выполнения запроса: %v", err)
 	}
@@ -33,12 +28,7 @@ func GetOrderPositions() ([]models.OrderPosition, error) {
 }
 
 func GetOrderPositionById(id int64) (models.OrderPosition, error) {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return models.OrderPosition{}, errors.New("подключение к базе данных не инициализировано")
-	}
-
-	row := db.DB.QueryRow("SELECT id, order_id, position_id FROM order_position WHERE id = $1", id)
+	row := database.DB.QueryRow("SELECT id, order_id, position_id FROM order_position WHERE id = $1", id)
 	var op models.OrderPosition
 	if err := row.Scan(&op.ID, &op.OrderID, &op.PositionID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -50,13 +40,8 @@ func GetOrderPositionById(id int64) (models.OrderPosition, error) {
 }
 
 func PostOrderPosition(op models.OrderPosition) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
-
 	query := "INSERT INTO order_position (order_id, position_id) VALUES ($1, $2)"
-	result, err := db.DB.Exec(query, op.OrderID, op.PositionID)
+	result, err := database.DB.Exec(query, op.OrderID, op.PositionID)
 	if err != nil {
 		log.Printf("Ошибка при добавлении позиции заказа: %v", err)
 		return fmt.Errorf("ошибка при добавлении позиции заказа: %v", err)
@@ -73,13 +58,8 @@ func PostOrderPosition(op models.OrderPosition) error {
 }
 
 func PutOrderPosition(id int64, op models.OrderPosition) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
-
 	query := "UPDATE order_position SET order_id = $1, position_id = $2 WHERE id = $3"
-	result, err := db.DB.Exec(query, op.OrderID, op.PositionID, id)
+	result, err := database.DB.Exec(query, op.OrderID, op.PositionID, id)
 	if err != nil {
 		return fmt.Errorf("ошибка при обновлении позиции заказа: %v", err)
 	}
@@ -95,13 +75,8 @@ func PutOrderPosition(id int64, op models.OrderPosition) error {
 }
 
 func DeleteOrderPosition(id int64) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
-
 	query := "DELETE FROM order_position WHERE id = $1"
-	result, err := db.DB.Exec(query, id)
+	result, err := database.DB.Exec(query, id)
 	if err != nil {
 		return fmt.Errorf("ошибка при удалении позиции заказа: %v", err)
 	}

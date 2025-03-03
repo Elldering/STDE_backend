@@ -1,10 +1,10 @@
 package test_db
 
 import (
+	"STDE_proj/utils/database"
 	"testing"
 
 	"STDE_proj/configs"
-	"STDE_proj/utils/db"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,6 +15,6 @@ func TestConnectDB(t *testing.T) {
 	assert.NoError(t, err, "Ошибка загрузки конфигурации")
 
 	// Подключаемся к базе данных
-	err = db.Connect()
+	err = database.Connect()
 	assert.NoError(t, err, "Ошибка подключения к базе данных")
 }

@@ -6,11 +6,11 @@ import (
 	"STDE_proj/internal/controllers/RegisterController"
 	"STDE_proj/internal/middleware"
 	"github.com/gin-gonic/gin"
-	"os"
 )
 
 func Routes(router *gin.Engine) {
-	JWTSecret := os.Getenv("JWT_SECRET")
+
+	//JWTSecret := os.Getenv("JWT_SECRET")
 
 	public := router.Group("/api/public")
 	{
@@ -21,26 +21,31 @@ func Routes(router *gin.Engine) {
 			//user.POST("/add", controllers.PostAuthUserHandler)
 			register := user.Group("/register")
 			{
-				register.POST("/", RegisterController.RegisterControllerHandler)
-				register.PATCH("/verify/:id", RegisterController.VerifyControllerHandler)
+				register.POST("/", RegisterController.RegisterHandler)
 
 			}
 
+			user.POST("/verify/:type", controllers.VerifyControllerHandler)
+
 		}
 
-		auth := public.Group("/auth")
+		public.POST("/auth", controllers.AuthenticationHandler)
+
+		token := public.Group("/token")
 		{
-			auth.POST("/login", Auth.LoginHandler)
-			auth.POST("/refresh", Auth.RefreshToken)
+			token.POST("/", controllers.GenerateAccessRefreshToken)
+			token.GET("/check", controllers.TokenCheckController)
+			token.POST("/refresh", controllers.RefreshToken)
 		}
+
 	}
 
 	protected := router.Group("/api/private")
-	protected.Use(middleware.AuthMiddleware(JWTSecret))
+	protected.Use(middleware.AuthMiddleware())
 	{
 		user := protected.Group("/user")
 		{
-			user.POST("/delete/:id", controllers.DeleteAuthUserHandler)
+			user.DELETE("/delete/:id", controllers.DeleteAuthUserHandler)
 
 			Basket := user.Group("/basket")
 			{

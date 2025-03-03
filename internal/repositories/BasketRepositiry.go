@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"STDE_proj/internal/models"
-	"STDE_proj/utils/db"
+	"STDE_proj/utils/database"
 	"context"
 	"database/sql"
 	"errors"
@@ -11,11 +11,7 @@ import (
 )
 
 func GetBasket() ([]models.Basket, error) {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return nil, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
-	rows, err := db.DB.Query("SELECT id, auth_user_id, position_id FROM basket")
+	rows, err := database.DB.Query("SELECT id, auth_user_id, position_id FROM basket")
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +33,7 @@ func GetBasket() ([]models.Basket, error) {
 	return baskets, nil
 }
 func GetBasketById(id int) (models.Basket, error) {
-	row := db.DB.QueryRow("SELECT id, auth_user_id, position_id FROM basket where id=$1", id)
+	row := database.DB.QueryRow("SELECT id, auth_user_id, position_id FROM basket where id=$1", id)
 	var basket models.Basket
 	if err := row.Scan(&basket.ID, &basket.AuthUserID, &basket.PositionID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -48,13 +44,10 @@ func GetBasketById(id int) (models.Basket, error) {
 	return basket, nil
 }
 func PostBasket(agp models.Basket) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
+	
 
 	query := "INSERT INTO basket (auth_user_id, position_id) VALUES ($1, $2)"
-	result, err := db.DB.Exec(query, agp.AuthUserID, agp.PositionID)
+	result, err := database.DB.Exec(query, agp.AuthUserID, agp.PositionID)
 	if err != nil {
 		log.Printf("Ошибка при добавлении записи в корзину: %v", err)
 		return fmt.Errorf("ошибка при добавлении записи в корзину: %v", err)
@@ -76,18 +69,18 @@ func PostBasket(agp models.Basket) error {
 }
 
 func DeleteBasketPosition(ctx context.Context, id int) error {
-	if db.DB == nil {
+	if database.DB == nil {
 		log.Println("Ошибка: подключение к базе данных не инициализировано")
 		return fmt.Errorf("подключение к базе данных не инициализировано")
 	}
-	_, err := db.DB.Exec("DELETE FROM basket WHERE id = $1", id)
+	_, err := database.DB.Exec("DELETE FROM basket WHERE id = $1", id)
 	return err
 }
 func DeleteBasketByUserID(ctx context.Context, id int) error {
-	if db.DB == nil {
+	if database.DB == nil {
 		log.Println("Ошибка: подключение к базе данных не инициализировано")
 		return fmt.Errorf("подключение к базе данных не инициализировано")
 	}
-	_, err := db.DB.Exec("DELETE FROM basket WHERE auth_user_id = $1", id)
+	_, err := database.DB.Exec("DELETE FROM basket WHERE auth_user_id = $1", id)
 	return err
 }

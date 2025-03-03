@@ -52,6 +52,6 @@ func PostReviewsHandler(c *gin.Context) {
 		return
 	}
 
-	log.Printf(" Право доступа %s успешно создано")
+	log.Println(" Право доступа успешно создано")
 	c.JSON(http.StatusOK, data)
 }

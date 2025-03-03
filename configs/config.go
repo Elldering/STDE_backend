@@ -47,6 +47,7 @@ type CORSConfig struct {
 	AllowOrigins     []string `mapstructure:"allow_origins"`
 	AllowMethods     []string `mapstructure:"allow_methods"`
 	AllowHeaders     []string `mapstructure:"allow_headers"`
+	ExposeHeaders    []string `mapstructure:"expose_headers"`
 	AllowCredentials bool     `mapstructure:"allow_credentials"`
 	MaxAge           int      `mapstructure:"max_age"`
 }
@@ -144,6 +145,7 @@ func CorsConfig() gin.HandlerFunc {
 		AllowOrigins:     AppConfig.CORS.AllowOrigins,
 		AllowMethods:     AppConfig.CORS.AllowMethods,
 		AllowHeaders:     AppConfig.CORS.AllowHeaders,
+		ExposeHeaders:    AppConfig.CORS.ExposeHeaders,
 		AllowCredentials: AppConfig.CORS.AllowCredentials,
 		MaxAge:           time.Duration(AppConfig.CORS.MaxAge) * time.Second,
 	}

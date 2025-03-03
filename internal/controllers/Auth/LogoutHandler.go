@@ -1,23 +1,18 @@
 package Auth
 
 import (
-	"STDE_proj/internal/repositories"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func LogoutHandler(c *gin.Context) {
-	token := c.Request.Header.Get("Authorization")
-	if token == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Токен не предоставлен"})
-		return
-	}
+	
+	c.Header("X-Is-Authenticated", "false")
 
-	err := repositories.InvalidateToken(token)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка инвалидации токена"})
-		return
-	}
+	c.SetCookie("access_token", "", 0, "/", "", false, true)
 
-	c.JSON(http.StatusOK, gin.H{"message": "Успешный выход"})
+	c.SetCookie("refresh_token", "", 0, "/", "", false, true)
+
+	c.Status(http.StatusOK)
+
 }

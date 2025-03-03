@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"STDE_proj/internal/models"
-	"STDE_proj/utils/db"
+	"STDE_proj/utils/database"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -10,12 +10,7 @@ import (
 )
 
 func GetUserDocuments() ([]models.UserDocument, error) {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return nil, errors.New("подключение к базе данных не инициализировано")
-	}
-
-	rows, err := db.DB.Query("SELECT id, name, image, is_accepted, type FROM user_document")
+	rows, err := database.DB.Query("SELECT id, name, image, is_accepted, type FROM user_document")
 	if err != nil {
 		return nil, fmt.Errorf("ошибка выполнения запроса: %v", err)
 	}
@@ -33,12 +28,7 @@ func GetUserDocuments() ([]models.UserDocument, error) {
 }
 
 func GetUserDocumentById(id int) (models.UserDocument, error) {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return models.UserDocument{}, errors.New("подключение к базе данных не инициализировано")
-	}
-
-	row := db.DB.QueryRow("SELECT id, name, image, is_accepted, type FROM user_document WHERE id = $1", id)
+	row := database.DB.QueryRow("SELECT id, name, image, is_accepted, type FROM user_document WHERE id = $1", id)
 	var ud models.UserDocument
 	if err := row.Scan(&ud.ID, &ud.Name, &ud.Image, &ud.IsAccepted, &ud.Type); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -50,13 +40,8 @@ func GetUserDocumentById(id int) (models.UserDocument, error) {
 }
 
 func PostUserDocument(ud models.UserDocument) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
-
 	query := "INSERT INTO user_document (name, image, is_accepted, type) VALUES ($1, $2, $3, $4)"
-	result, err := db.DB.Exec(query, ud.Name, ud.Image, ud.IsAccepted, ud.Type)
+	result, err := database.DB.Exec(query, ud.Name, ud.Image, ud.IsAccepted, ud.Type)
 	if err != nil {
 		log.Printf("Ошибка при добавлении документа: %v", err)
 		return fmt.Errorf("ошибка при добавлении документа: %v", err)
@@ -73,13 +58,8 @@ func PostUserDocument(ud models.UserDocument) error {
 }
 
 func PutUserDocument(id int, ud models.UserDocument) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
-
 	query := "UPDATE user_document SET name = $1, image = $2, is_accepted = $3, type = $4 WHERE id = $5"
-	result, err := db.DB.Exec(query, ud.Name, ud.Image, ud.IsAccepted, ud.Type, id)
+	result, err := database.DB.Exec(query, ud.Name, ud.Image, ud.IsAccepted, ud.Type, id)
 	if err != nil {
 		return fmt.Errorf("ошибка при обновлении документа: %v", err)
 	}
@@ -95,13 +75,8 @@ func PutUserDocument(id int, ud models.UserDocument) error {
 }
 
 func DeleteUserDocument(id int) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
-
 	query := "DELETE FROM user_document WHERE id = $1"
-	result, err := db.DB.Exec(query, id)
+	result, err := database.DB.Exec(query, id)
 	if err != nil {
 		return fmt.Errorf("ошибка при удалении документа: %v", err)
 	}

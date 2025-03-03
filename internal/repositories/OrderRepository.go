@@ -3,7 +3,7 @@ package repositories
 //
 //import (
 //	"STDE_proj/internal/models"
-//	"STDE_proj/utils/db"
+//	"STDE_proj/utils/database"
 //	"database/sql"
 //	"fmt"
 //	"log"
@@ -11,12 +11,12 @@ package repositories
 //
 //func GetOrder() ([]models.Order, error) {
 //
-//	if db.DB == nil {
+//	if database.DB == nil {
 //		log.Println("Ошибка: подключение к базе данных не инициализировано")
 //		return nil, fmt.Errorf("подключение к базе данных не инициализировано")
 //	}
 //
-//	query, err := db.DB.Query("SELECT id, total_price, status, delivery_address, create_at, closed_at, auth_user_id, track_number, deliverer_accepted FROM Order")
+//	query, err := database.DB.Query("SELECT id, total_price, status, delivery_address, create_at, closed_at, auth_user_id, track_number, deliverer_accepted FROM Order")
 //
 //	if err != nil {
 //		return nil, err

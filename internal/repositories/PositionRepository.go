@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"STDE_proj/internal/models"
-	"STDE_proj/utils/db"
+	"STDE_proj/utils/database"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -11,12 +11,8 @@ import (
 )
 
 func GetAllPositions() ([]models.Position, error) {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return nil, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
-	rows, err := db.DB.Query("SELECT id, name, description, price, available, image FROM position")
+	rows, err := database.DB.Query("SELECT id, name, description, price, available, image FROM position")
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +35,7 @@ func GetAllPositions() ([]models.Position, error) {
 }
 
 func GetPositionById(id int) (models.Position, error) {
-	row := db.DB.QueryRow("SELECT id, name, description, price, available, image FROM position WHERE id=$1", id)
+	row := database.DB.QueryRow("SELECT id, name, description, price, available, image FROM position WHERE id=$1", id)
 
 	var position models.Position
 	if err := row.Scan(&position.ID, &position.Name, &position.Description, &position.Price, &position.Available, &position.Image); err != nil {
@@ -53,17 +49,13 @@ func GetPositionById(id int) (models.Position, error) {
 
 // Создание новой позиции
 func PostPosition(agp models.Position) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
 
 	if strings.TrimSpace(agp.Description) == "" || strings.TrimSpace(agp.Name) == "" || strings.TrimSpace(agp.Image) == "" {
 		log.Println("Ошибка: пустые поля codename или description")
 		return errors.New("поля Name, Image и Description не могут быть пустыми")
 	}
 	query := "INSERT INTO position (name, description, price, available, image) VALUES ($1, $2, $3, $4, $5)"
-	result, err := db.DB.Exec(query, agp.Name, agp.Description, agp.Price, agp.Available, agp.Image)
+	result, err := database.DB.Exec(query, agp.Name, agp.Description, agp.Price, agp.Available, agp.Image)
 
 	if err != nil {
 		log.Printf("Ошибка при добавлении блюда: %v", err)
@@ -85,12 +77,9 @@ func PostPosition(agp models.Position) error {
 }
 
 func PutPosition(id int, position models.Position) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
+
 	query := "UPDATE position SET name=$1, description=$2, price=$3, available=$4, image=$5 WHERE id=$6"
-	result, err := db.DB.Exec(query, position.Name, position.Description, position.Price, position.Available, position.Image, id)
+	result, err := database.DB.Exec(query, position.Name, position.Description, position.Price, position.Available, position.Image, id)
 	if err != nil {
 		log.Printf("Ошибка при удалении блюда с id %d: %v", id, err)
 		return fmt.Errorf("ошибка при удалении блюда: %v", err)
@@ -111,6 +100,6 @@ func PutPosition(id int, position models.Position) error {
 }
 
 func DeletePosition(id int) error {
-	_, err := db.DB.Exec("DELETE FROM position WHERE id=$1", id)
+	_, err := database.DB.Exec("DELETE FROM position WHERE id=$1", id)
 	return err
 }

@@ -1,18 +1,28 @@
 package RegisterService
 
 import (
+	"STDE_proj/internal/models"
 	"STDE_proj/internal/repositories/RegisterRepository"
 	"STDE_proj/utils/hash"
+	"STDE_proj/utils/validation"
+	"errors"
 	"log"
 )
 
-func Register(username string, password string) error {
+func Register(data models.AuthUserRequest) error {
+	err := validation.CheckEmailOrPhoneNumber(&data)
+	if err != nil {
+		return err
+	}
 
-	hashedPassword, err := hash.HashPassword(password)
+	if !validation.ValidatePassword(data.Password) {
+		return errors.New("некорректный пароль")
+	}
+	hashedPassword, err := hash.HashPassword(data.Password)
 	if err != nil {
 		log.Printf("Ошибка при хешировании пароля: %v", err)
 		return err
 	}
-	password = hashedPassword
-	return RegisterRepository.Register(username, password)
+	data.Password = hashedPassword
+	return RegisterRepository.Register(data)
 }

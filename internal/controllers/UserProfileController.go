@@ -13,16 +13,17 @@ import (
 // Использует метод GetAllUserGroups из пакета repositories для получения данных.
 // В случае ошибки возвращает HTTP статус 500 и сообщение об ошибке.
 // В случае успеха возвращает HTTP статус 200 и JSON с данными групп пользователей.
+
 func GetUserProfileHandler(c *gin.Context) {
-	// Получаем все группы пользователей из репозитория
+
 	userProfile, err := services.GetAllUserProfile()
 	if err != nil {
-		// Логируем ошибку и возвращаем HTTP статус 500 и сообщение об ошибке
+
 		log.Printf("Ошибка при получении профелей пользователей: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
 		return
 	}
-	// Возвращаем HTTP статус 200 и JSON с данными групп пользователей
+
 	c.JSON(http.StatusOK, userProfile)
 }
 
@@ -45,6 +46,7 @@ func GetUserProfileByIdHandler(c *gin.Context) {
 
 func PostUserProfileHandler(c *gin.Context) {
 	var agp models.UserProfile
+
 	if err := c.ShouldBindJSON(&agp); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

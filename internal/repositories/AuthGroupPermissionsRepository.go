@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"STDE_proj/internal/models"
-	"STDE_proj/utils/db"
+	"STDE_proj/utils/database"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -10,12 +10,8 @@ import (
 )
 
 func GetAuthGroupPermissions() ([]models.AuthGroupPermissions, error) {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return nil, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
-	rows, err := db.DB.Query("SELECT id, group_id, permission_id FROM auth_group_permissions")
+	rows, err := database.DB.Query("SELECT id, group_id, permission_id FROM auth_group_permissions")
 	if err != nil {
 		return nil, err
 	}
@@ -34,11 +30,8 @@ func GetAuthGroupPermissions() ([]models.AuthGroupPermissions, error) {
 }
 
 func GetAuthGroupPermissionsId(id int) (models.AuthGroupPermissions, error) {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return models.AuthGroupPermissions{}, fmt.Errorf("подключение к базе данных не инициализировано")
-	}
-	row := db.DB.QueryRow("SELECT id, group_id, permission_id FROM auth_group_permissions WHERE id=$1", id)
+
+	row := database.DB.QueryRow("SELECT id, group_id, permission_id FROM auth_group_permissions WHERE id=$1", id)
 	var data models.AuthGroupPermissions
 	if err := row.Scan(&data.ID, &data.GroupID, &data.PermissionID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -52,16 +45,13 @@ func GetAuthGroupPermissionsId(id int) (models.AuthGroupPermissions, error) {
 }
 
 func PutAuthGroupPermissions(id int, data models.AuthGroupPermissions) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
+
 	if data.GroupID == 0 || data.PermissionID == 0 {
 		log.Println("Ошибка: пустые поля group_id или permission_id")
 		return errors.New("поля group_id и permission_id не могут быть пустыми")
 	}
 
-	row := db.DB.QueryRow("SELECT id FROM auth_group_permissions WHERE id=$1", id)
+	row := database.DB.QueryRow("SELECT id FROM auth_group_permissions WHERE id=$1", id)
 	var existingID int
 	if err := row.Scan(&existingID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -72,7 +62,7 @@ func PutAuthGroupPermissions(id int, data models.AuthGroupPermissions) error {
 		return fmt.Errorf("ошибка при проверке существования связи группы с правами доступа: %v", err)
 	}
 
-	exec, err := db.DB.Exec("UPDATE auth_group_permissions SET group_id=$1, permission_id=$2 WHERE id=$3", data.GroupID, data.PermissionID, id)
+	exec, err := database.DB.Exec("UPDATE auth_group_permissions SET group_id=$1, permission_id=$2 WHERE id=$3", data.GroupID, data.PermissionID, id)
 	if err != nil {
 		log.Printf("Ошибка при обновлении связи группы с правами доступа с id %d: %v", id, err)
 		return fmt.Errorf("ошибка при обновлении связи группы с правами доступа: %v", err)
@@ -92,13 +82,9 @@ func PutAuthGroupPermissions(id int, data models.AuthGroupPermissions) error {
 }
 
 func DeleteAuthGroupPermissions(id int) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	// Удаление группы пользователей
-	exec, err := db.DB.Exec("DELETE FROM auth_group_permissions WHERE id=$1", id)
+	exec, err := database.DB.Exec("DELETE FROM auth_group_permissions WHERE id=$1", id)
 	if err != nil {
 		log.Println("Ошибка при удалении связи группы с правами доступа:", err)
 		return fmt.Errorf("ошибка при удалении связи группы с правами доступа: %v", err)
@@ -119,12 +105,8 @@ func DeleteAuthGroupPermissions(id int) error {
 
 // Функция для создания связи группы и прав доступа
 func PostAuthGroupPermission(agp models.AuthGroupPermissions) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return fmt.Errorf("подключение к базе данных не инициализировано")
-	}
 
 	query := "INSERT INTO auth_group_permissions (group_id, permission_id) VALUES ($1, $2)"
-	_, err := db.DB.Exec(query, agp.GroupID, agp.PermissionID)
+	_, err := database.DB.Exec(query, agp.GroupID, agp.PermissionID)
 	return err
 }

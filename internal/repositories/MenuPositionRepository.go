@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"STDE_proj/internal/models"
-	"STDE_proj/utils/db"
+	"STDE_proj/utils/database"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -10,12 +10,12 @@ import (
 )
 
 func GetMenuPositions() ([]models.MenuPosition, error) {
-	if db.DB == nil {
+	if database.DB == nil {
 		log.Println("Ошибка: подключение к базе данных не инициализировано")
 		return nil, errors.New("подключение к базе данных не инициализировано")
 	}
 
-	rows, err := db.DB.Query("SELECT id, menu_id, position_id FROM menu_position")
+	rows, err := database.DB.Query("SELECT id, menu_id, position_id FROM menu_position")
 	if err != nil {
 		return nil, fmt.Errorf("ошибка выполнения запроса: %v", err)
 	}
@@ -33,12 +33,7 @@ func GetMenuPositions() ([]models.MenuPosition, error) {
 }
 
 func GetMenuPositionById(id int64) (models.MenuPosition, error) {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return models.MenuPosition{}, errors.New("подключение к базе данных не инициализировано")
-	}
-
-	row := db.DB.QueryRow("SELECT id, menu_id, position_id FROM menu_position WHERE id = $1", id)
+	row := database.DB.QueryRow("SELECT id, menu_id, position_id FROM menu_position WHERE id = $1", id)
 	var mp models.MenuPosition
 	if err := row.Scan(&mp.ID, &mp.MenuID, &mp.PositionID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -50,13 +45,9 @@ func GetMenuPositionById(id int64) (models.MenuPosition, error) {
 }
 
 func PostMenuPosition(mp models.MenuPosition) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
 
 	query := "INSERT INTO menu_position (menu_id, position_id) VALUES ($1, $2)"
-	result, err := db.DB.Exec(query, mp.MenuID, mp.PositionID)
+	result, err := database.DB.Exec(query, mp.MenuID, mp.PositionID)
 	if err != nil {
 		log.Printf("Ошибка при добавлении позиции меню: %v", err)
 		return fmt.Errorf("ошибка при добавлении позиции меню: %v", err)
@@ -73,13 +64,8 @@ func PostMenuPosition(mp models.MenuPosition) error {
 }
 
 func PutMenuPosition(id int64, mp models.MenuPosition) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
-
 	query := "UPDATE menu_position SET menu_id = $1, position_id = $2 WHERE id = $3"
-	result, err := db.DB.Exec(query, mp.MenuID, mp.PositionID, id)
+	result, err := database.DB.Exec(query, mp.MenuID, mp.PositionID, id)
 	if err != nil {
 		return fmt.Errorf("ошибка при обновлении позиции меню: %v", err)
 	}
@@ -95,13 +81,9 @@ func PutMenuPosition(id int64, mp models.MenuPosition) error {
 }
 
 func DeleteMenuPosition(id int64) error {
-	if db.DB == nil {
-		log.Println("Ошибка: подключение к базе данных не инициализировано")
-		return errors.New("подключение к базе данных не инициализировано")
-	}
 
 	query := "DELETE FROM menu_position WHERE id = $1"
-	result, err := db.DB.Exec(query, id)
+	result, err := database.DB.Exec(query, id)
 	if err != nil {
 		return fmt.Errorf("ошибка при удалении позиции меню: %v", err)
 	}
