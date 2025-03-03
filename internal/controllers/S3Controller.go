@@ -37,7 +37,7 @@ func PostFileHandler(c *gin.Context) {
 
 	url, err := services.PostFile(context.TODO(), fileBytes, objectKey)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error ": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"url": url})
@@ -59,10 +59,9 @@ func DeleteFileHandler(c *gin.Context) {
 }
 
 func GetFileURLHandler(c *gin.Context) {
-	bucket := c.Param("bucket")
 	objectKey := strings.TrimLeft(c.Param("key"), "/")
-	if bucket == "" || objectKey == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bucket and object key are required"})
+	if objectKey == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Имя файла не указано"})
 		return
 	}
 

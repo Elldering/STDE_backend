@@ -9,13 +9,13 @@ func TestRoutes(router *gin.Engine) {
 	test := router.Group("api/test-routes")
 	{
 
-		s3Group := router.Group("/s3")
+		s3Group := test.Group("/s3")
 		{
-			// POST — загрузка файла
-			s3Group.POST("/upload", controllers.PostFileHandler)
+			// POST — загрузка файла с поддержкой пути *key (можно писать /папка/../папка/файл.расширение)
+			s3Group.POST("/upload/*key", controllers.PostFileHandler)
 
-			// DELETE — удаление файла
-			s3Group.DELETE("/files/:filename", controllers.DeleteFileHandler)
+			// DELETE с поддержкой пути *key (можно писать /папка/../папка/файл.расширение)
+			s3Group.DELETE("/files/*key", controllers.DeleteFileHandler)
 
 			// Список бакетов
 			s3Group.GET("/buckets", controllers.ListBucketsHandler)
@@ -23,14 +23,12 @@ func TestRoutes(router *gin.Engine) {
 			// Список файлов
 			s3Group.GET("/files", controllers.ListFilesHandler)
 
-			// GET — получение файла/подписанного URL
-			s3Group.GET("/files/url/:bucket/:filename", controllers.GetFileURLHandler)
+			// GET — получение подписанного URL с поддержкой пути *key (можно писать /папка/../папка/файл.расширение)
+			s3Group.GET("/files/url/*key", controllers.GetFileURLHandler)
 
-			// Скачивание файла
-			s3Group.GET("/download/:filename", controllers.DownloadFileHandler)
+			// Скачивание файла с поддержкой пути
+			s3Group.GET("/download/*key", controllers.DownloadFileHandler)
 
-			// Пока не сделал
-			//s3Group.PUT("/files/:filename", s3Controller.PutFileHandler)
 		}
 
 		// Создание вложенной группы маршрутов для "reviews" внутри группы "test"
@@ -90,6 +88,57 @@ func TestRoutes(router *gin.Engine) {
 			UserProfile.PUT("/:id", controllers.PutUserProfileHandler)
 			UserProfile.DELETE("/:id", controllers.DeleteUserProfileHandler)
 		}
-
+		Basket := test.Group("/basket")
+		{
+			Basket.GET("/", controllers.GetBasketsHandler)
+			Basket.GET("/:id", controllers.GetBasketByIdUserHandler)
+			Basket.POST("/", controllers.PostBasketHandler)
+			//Basket.PUT("/:id", controllers.PutBasketHandler)
+			Basket.DELETE("/*id", controllers.DeleteBasketHandler) //Добавить "user/" для удаления всех позиций у пользователя
+		}
+		Menu := test.Group("/menu")
+		{
+			Menu.GET("/", controllers.GetMenuHandler)
+			Menu.GET("/:id", controllers.GetMenuByIdHandler)
+			Menu.POST("/", controllers.PostMenuHandler)
+			Menu.PUT("/:id", controllers.PutMenuHandler)
+			Menu.DELETE("/:id", controllers.DeleteMenuHandler)
+		}
+		MenuPosition := test.Group("/menu-position")
+		{
+			MenuPosition.GET("/", controllers.GetMenuPositionsHandler)
+			MenuPosition.GET("/:id", controllers.GetMenuPositionByIdHandler)
+			MenuPosition.POST("/", controllers.PostMenuPositionHandler)
+			MenuPosition.PUT("/:id", controllers.PutMenuPositionHandler)
+			MenuPosition.DELETE("/:id", controllers.DeleteMenuPositionHandler)
+		}
+		OrderPosition := test.Group("/order-position")
+		{
+			OrderPosition.GET("/", controllers.GetOrderPositionsHandler)
+			OrderPosition.GET("/:id", controllers.GetOrderPositionByIdHandler)
+			OrderPosition.POST("/", controllers.PostOrderPositionHandler)
+			OrderPosition.PUT("/:id", controllers.PutOrderPositionHandler)
+			OrderPosition.DELETE("/:id", controllers.DeleteOrderPositionHandler)
+		}
+		DocumentAuthUser := test.Group("/document-auth-user")
+		{
+			DocumentAuthUser.GET("/", controllers.GetDocumentAuthUsersHandler)
+			DocumentAuthUser.GET("/:id", controllers.GetDocumentAuthUserByIdHandler)
+			DocumentAuthUser.POST("/", controllers.PostDocumentAuthUserHandler)
+			DocumentAuthUser.PUT("/:id", controllers.PutDocumentAuthUserHandler)
+			DocumentAuthUser.DELETE("/:id", controllers.DeleteDocumentAuthUserHandler)
+		}
+		UserDocument := test.Group("/user-document")
+		{
+			UserDocument.GET("/", controllers.GetUserDocumentsHandler)
+			UserDocument.GET("/:id", controllers.GetUserDocumentByIdHandler)
+			UserDocument.POST("/", controllers.PostUserDocumentHandler)
+			UserDocument.PUT("/:id", controllers.PutUserDocumentHandler)
+			UserDocument.DELETE("/:id", controllers.DeleteUserDocumentHandler)
+		}
+		Metrics := test.Group("/metrics")
+		{
+			Metrics.GET("/", controllers.UpdateMetrics)
+		}
 	}
 }

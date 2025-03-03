@@ -40,13 +40,21 @@ func Routes(router *gin.Engine) {
 
 	}
 
-
 	protected := router.Group("/api/private")
 	protected.Use(middleware.AuthMiddleware())
 	{
 		user := protected.Group("/user")
 		{
 			user.DELETE("/delete/:id", controllers.DeleteAuthUserHandler)
+
+			Basket := user.Group("/basket")
+			{
+				Basket.GET("/", controllers.GetBasketsHandler)
+				Basket.GET("/:id", controllers.GetBasketByIdUserHandler)
+				Basket.POST("/", controllers.PostBasketHandler)
+				//Basket.PUT("/:id", controllers.PutBasketHandler)
+				Basket.DELETE("/*id", controllers.DeleteBasketHandler) //Добавить "user/" для удаления всех позиций у пользователя
+			}
 		}
 
 		reviews := protected.Group("/reviews")
@@ -108,6 +116,47 @@ func Routes(router *gin.Engine) {
 			UserProfile.POST("/", controllers.PostUserProfileHandler)
 			UserProfile.PUT("/:id", controllers.PutUserProfileHandler)
 			UserProfile.DELETE("/:id", controllers.DeleteUserProfileHandler)
+		}
+
+		Menu := protected.Group("/menu")
+		{
+			Menu.GET("/", controllers.GetMenuHandler)
+			Menu.GET("/:id", controllers.GetMenuByIdHandler)
+			Menu.POST("/", controllers.PostMenuHandler)
+			Menu.PUT("/:id", controllers.PutMenuHandler)
+			Menu.DELETE("/:id", controllers.DeleteMenuHandler)
+		}
+		MenuPosition := protected.Group("/menu-position")
+		{
+			MenuPosition.GET("/", controllers.GetMenuPositionsHandler)
+			MenuPosition.GET("/:id", controllers.GetMenuPositionByIdHandler)
+			MenuPosition.POST("/", controllers.PostMenuPositionHandler)
+			MenuPosition.PUT("/:id", controllers.PutMenuPositionHandler)
+			MenuPosition.DELETE("/:id", controllers.DeleteMenuPositionHandler)
+		}
+		OrderPosition := protected.Group("/order-position")
+		{
+			OrderPosition.GET("/", controllers.GetOrderPositionsHandler)
+			OrderPosition.GET("/:id", controllers.GetOrderPositionByIdHandler)
+			OrderPosition.POST("/", controllers.PostOrderPositionHandler)
+			OrderPosition.PUT("/:id", controllers.PutOrderPositionHandler)
+			OrderPosition.DELETE("/:id", controllers.DeleteOrderPositionHandler)
+		}
+		DocumentAuthUser := protected.Group("/document-auth-user")
+		{
+			DocumentAuthUser.GET("/", controllers.GetDocumentAuthUsersHandler)
+			DocumentAuthUser.GET("/:id", controllers.GetDocumentAuthUserByIdHandler)
+			DocumentAuthUser.POST("/", controllers.PostDocumentAuthUserHandler)
+			DocumentAuthUser.PUT("/:id", controllers.PutDocumentAuthUserHandler)
+			DocumentAuthUser.DELETE("/:id", controllers.DeleteDocumentAuthUserHandler)
+		}
+		UserDocument := protected.Group("/user-document")
+		{
+			UserDocument.GET("/", controllers.GetUserDocumentsHandler)
+			UserDocument.GET("/:id", controllers.GetUserDocumentByIdHandler)
+			UserDocument.POST("/", controllers.PostUserDocumentHandler)
+			UserDocument.PUT("/:id", controllers.PutUserDocumentHandler)
+			UserDocument.DELETE("/:id", controllers.DeleteUserDocumentHandler)
 		}
 
 	}

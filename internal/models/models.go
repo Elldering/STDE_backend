@@ -15,6 +15,7 @@ type DataModels struct {
 	Basket               Basket               `json:"basket"`
 	DocumentAuthUser     DocumentAuthUser     `json:"documentAuthUser"`
 	Menu                 Menu                 `json:"menu"`
+	MenuPosition         MenuPosition         `json:"menuPosition"`
 	Order                Order                `json:"order"`
 	OrderPosition        OrderPosition        `json:"orderPosition"`
 	Permission           Permission           `json:"permission"`
@@ -89,8 +90,13 @@ type DocumentAuthUser struct {
 type Menu struct {
 	ID         int64  `json:"id"`
 	Name       string `json:"name"`
-	PositionID int    `json:"position_id"`
 	AuthUserID int    `json:"auth_user_id"`
+}
+
+type MenuPosition struct {
+	ID         int64 `json:"id"`
+	MenuID     int   `json:"menu_id"`
+	PositionID int   `json:"position_id"`
 }
 
 type Order struct {
