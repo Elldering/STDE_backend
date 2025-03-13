@@ -44,10 +44,10 @@ func main() {
 	err := crons.Crones(CronHandler)
 	if err != nil {
 		return
-	}
+	}	
 	CronHandler.Start()
 	// Запускаем наш маршрутизатор (приложение)
-	if err := router.Run(":8080"); err != nil {
+	if err := router.Run(":8085"); err != nil {
 		log.Fatalf("Ошибка запуска сервера: %v", err)
 	}
 }

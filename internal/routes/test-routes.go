@@ -2,7 +2,9 @@ package routes
 
 import (
 	"STDE_proj/internal/controllers"
+
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func TestRoutes(router *gin.Engine) {
@@ -138,7 +140,7 @@ func TestRoutes(router *gin.Engine) {
 		}
 		Metrics := test.Group("/metrics")
 		{
-			Metrics.GET("/", controllers.UpdateMetrics)
+			Metrics.GET("/", gin.WrapH(promhttp.Handler()))
 		}
 	}
 }
