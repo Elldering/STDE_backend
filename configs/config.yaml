@@ -10,10 +10,7 @@ database:
 
 cors:
   allow_origins:
-    - "http://localhost:5173"
-    - "http://localhost:8083"
-    - "http://localhost:8082"
-    - "http://localhost:8084"
+    - "http://localhost:8081"
   allow_methods:
     - "GET"
     - "POST"
@@ -49,5 +46,18 @@ prometheus:
     - job_name: 'collect_metrics'
       static_configs:
         - targets: ['localhost:8080']
+
+influxdb:
+  url: "http://localhost:8086"
+  token: "gTQQqwuMH_2gSyvA0EsUXJyX-uLiDvHKyYvTxskPJmubWyPu5Ux0k2YPwmG4BXMWYIVNLNgxxtJE6fyyXGa6Hw=="
+  org: "MPT"
+  bucket: "metrics"
+
+telegraf:
+  enabled: true
+  input_plugins:
+    - "http"
+  output_plugins:
+    - "influxdb_v2"
 
 

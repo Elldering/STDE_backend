@@ -20,6 +20,7 @@ type Config struct {
 	CORS       CORSConfig       `mapstructure:"cors"`
 	S3         S3Config         `mapstructure:"s3"`
 	Prometheus PrometheusConfig `mapstructure:"prometheus"`
+	Influxdb InfluxdbConfig `mapstructure:"influxdb"`
 }
 
 // ServerConfig структура для конфигурации сервера
@@ -65,6 +66,12 @@ type S3Config struct {
 type PrometheusConfig struct {
 	Global        GlobalConfig   `mapstructure:"global"`
 	ScrapeConfigs []ScrapeConfig `mapstructure:"scrape_configs"`
+}
+type InfluxdbConfig struct {
+	URL    string `mapstructure:"url"`
+	Token  string `mapstructure:"token"`
+	Org    string `mapstructure:"org"`
+	Bucket string `mapstructure:"bucket"`
 }
 
 // GlobalConfig структура для глобальных настроек Prometheus
@@ -148,6 +155,7 @@ func CorsConfig() gin.HandlerFunc {
 		ExposeHeaders:    AppConfig.CORS.ExposeHeaders,
 		AllowCredentials: AppConfig.CORS.AllowCredentials,
 		MaxAge:           time.Duration(AppConfig.CORS.MaxAge) * time.Second,
+		
 	}
 
 	// Проверяем, что AllowOrigins не пустой
